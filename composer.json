@@ -1,0 +1,23 @@
+{
+  "name":        "torches/phalcon-api",
+  "type":        "library",
+  "description": "REST API Package for Phalcon PHP",
+  "keywords":    ["phalcon", "rest", "api", "api first", "apigee"],
+  "homepage":    "https://github.com/torches/phalcon-api",
+  "license":     "MIT",
+  "authors":     [
+    {
+      "name":     "Jay Francis",
+      "homepage": "https://github.com/torches"
+    }
+  ],
+  "autoload":    {
+    "psr-4": {
+      "PhalconAPI\\": "src/"
+    }
+  },
+  "require":     {
+    "digitronac/phalcon-ide-stubs": "1.3.0",
+    "zendframework/zend-code": "2.3.*@dev"
+  }
+}
