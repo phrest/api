@@ -1,8 +1,8 @@
 <?php
 namespace PhalconAPI;
 
-use API\Responses\CSVResponse;
-use API\Responses\JSONResponse;
+use PhalconAPI\Responses\CSVResponse;
+use PhalconAPI\Responses\JSONResponse;
 use Phalcon\DI\FactoryDefault as DefaultDI;
 use Phalcon\Exception;
 use Phalcon\Mvc\Collection;
