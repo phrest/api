@@ -4,6 +4,8 @@ Phalcon REST API Package
 A Phalcon REST API package, based on Apigees guidelines as found in http://apigee.com/about/content/web-api-design
 This package is based loosely on: https://github.com/cmoore4/phalcon-rest
 
+Please see the skeleton project for an example of the usage: https://github.com/torches/phalcon-api-skeleton
+
 Proposed Features
 =================
 
