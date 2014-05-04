@@ -15,6 +15,7 @@ class JSONResponse extends Response
   public function send($records, $error = false)
   {
 
+
     // Error's come from HTTPException.  This helps set the proper envelope data
     $response = $this->di->get('response');
     $success = ($error) ? 'ERROR' : 'SUCCESS';
@@ -49,11 +50,11 @@ class JSONResponse extends Response
       {
         // This is required to make the response JSON return an empty JS object.  Without
         // this, the JSON return an empty array:  [] instead of {}
-        $message['records'] = new \stdClass();
+        $message['response'] = new \stdClass();
       }
       else
       {
-        $message['records'] = $records;
+        $message['response'] = $records;
       }
     }
     else
