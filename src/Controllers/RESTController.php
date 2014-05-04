@@ -1,6 +1,7 @@
 <?php
 namespace PhalconAPI\Controllers;
 
+use Phalcon\Exception;
 use Phalcon\Mvc\Model\Resultset\Simple;
 use Phalcon\Mvc\Model;
 use PhalconAPI\Exceptions\HTTPException;
@@ -160,6 +161,42 @@ class RESTController extends BaseController
   protected function parsePartialFields($unparsed)
   {
     return explode(',', trim($unparsed, '()'));
+
+    // todo - allow parsing of related models etc.
+    $fields = explode(',', trim($unparsed, '()'));
+
+    $finalFields = [];
+    foreach($fields as $key => $field)
+    {
+      $dotPos = strpos($field, '.');
+      // Related model: emails.email,email.id
+      if($dotPos !== false)
+      {
+        $model = substr($field, 0, $dotPos);
+        $field = substr($field, $dotPos + 1);
+
+        // Add to list of fields for related model
+        if(isset($finalFields[$model]))
+        {
+          $finalFields[$model][] = $field;
+        }
+        else
+        {
+          $finalFields[$model] = [$field];
+        }
+      }
+      // Same model, fields only
+      else
+      {
+        if(!isset($finalFields['currentModel']))
+        {
+          $finalFields['currentModel'] = [];
+        }
+        $finalFields['currentModel'][] = $field;
+      }
+    }
+
+    return $finalFields;
   }
 
   /**
@@ -212,6 +249,21 @@ class RESTController extends BaseController
     {
       $this->isPartial = true;
       $this->partialFields = $this->parsePartialFields($fields);
+
+      /*
+       * todo - allow parsing of partial fields for related models
+       if(count($this->partialFields) > 0)
+      {
+        foreach($this->partialFields as $model)
+        {
+          var_dump($this->partialFields);
+          if(!isset($this->partialFields[$model]))
+          {
+            throw new Exception('Partial fields not available for ' . $model, 500);
+          }
+        }
+      }
+      die;*/
 
       // Determines if fields is a strict subset of allowed fields
       if(array_diff($this->partialFields, $this->allowedFields['partials']))
