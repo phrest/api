@@ -1,6 +1,9 @@
 <?php
 namespace PhalconAPI\Controllers;
 
+use Phalcon\Mvc\Model\Resultset\Simple;
+use Phalcon\Mvc\Model;
+use PhalconAPI\Exceptions\HTTPException;
 
 /**
  * Base RESTful Controller.
@@ -282,16 +285,30 @@ class RESTController extends BaseController
   }
 
   /**
-   * Should be called by methods in the controllers that need to output results to the HTTP Response.
-   * Ensures that arrays conform to the patterns required by the Response objects.
+   * Return this in your controllers, i.e. return $this->respond($user)
+   * This will prepare the response
    *
-   * @param  array $recordsArray Array of records to format as return output
-   * @return array               Output array.  If there are records (even 1), every record will be an array ex: array(array('id'=>1),array('id'=>2))
+   * @param $recordOrRecords
+   * @return array
+   * @throws \PhalconAPI\Exceptions\HTTPException
    */
-  protected function respond($recordsArray)
+  protected function respond($recordOrRecords)
   {
+    // If its a "ResultSet" (array of records) that is being returned, convert it to an array
+    if($recordOrRecords instanceof Simple)
+    {
+      $recordOrRecords = $recordOrRecords->toArray();
+    }
 
-    if(!is_array($recordsArray))
+    // Single record
+    if($recordOrRecords instanceof Model)
+    {
+      // Convert to array here
+      $recordOrRecords = $recordOrRecords->toArray();
+    }
+
+    // todo
+    if(!is_array($recordOrRecords))
     {
       // This is bad.  Throw a 500.  Responses should always be arrays.
       throw new HTTPException(
@@ -305,12 +322,12 @@ class RESTController extends BaseController
       );
     }
 
-    // No records returned, so return an empty array
-    if(count($recordsArray) < 1)
+    // No results will return an empty array
+    if(count($recordOrRecords) < 1)
     {
       return array();
     }
 
-    return array($recordsArray);
+    return $recordOrRecords;
   }
 }
