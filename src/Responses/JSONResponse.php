@@ -18,6 +18,7 @@ class JSONResponse extends Response
 
     // Error's come from HTTPException.  This helps set the proper envelope data
     $response = $this->di->get('response');
+    // todo change to status codes
     $success = ($error) ? 'ERROR' : 'SUCCESS';
 
     // If the query string 'envelope' is set to false, do not use the envelope.
