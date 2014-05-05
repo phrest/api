@@ -2,9 +2,9 @@
 namespace PhalconAPI\Controllers;
 
 use Phalcon\Exception;
-use Phalcon\Mvc\Model\Resultset\Simple;
 use Phalcon\Mvc\Model;
 use PhalconAPI\Exceptions\HTTPException;
+use Phalcon\Mvc\Model\ResultsetInterface;
 
 /**
  * Base RESTful Controller.
@@ -37,40 +37,57 @@ class RESTController extends BaseController
   protected $isPartial = false;
 
   /**
+   *
+   * If query contains an 'expand' parameter.
+   * This indicates the request wants to expand a related entity
+   * @var boolean
+   */
+  protected $isExpand = false;
+
+  /**
    * Set when there is a 'limit' query parameter
    * @var integer
    */
-  protected $limit = null;
+  protected $limit;
 
   /**
    * Set when there is an 'offset' query parameter
    * @var integer
    */
-  protected $offset = null;
+  protected $offset;
 
   /**
    * Array of fields requested to be searched against
    * @var array
    */
-  protected $searchFields = null;
+  protected $searchFields;
 
   /**
    * Array of fields requested to be returned
    * @var array
    */
-  protected $partialFields = null;
+  protected $partialFields;
+
+  /**
+   * Expand related entities
+   * @var null
+   */
+  protected $expandFields;
 
   /**
    * Sets which fields may be searched against, and which fields are allowed to be returned in
    * partial responses.  This will be overridden in child Controllers that support searching
    * and partial responses.
    * @var array
+   * todo remove
    */
   protected $allowedFields
     = array(
       'search' => array(),
       'partials' => array()
     );
+
+  protected $allowedPartialFields;
 
   /**
    * Constructor, calls the parse method for the query string by default.
@@ -87,37 +104,6 @@ class RESTController extends BaseController
     }
 
     return;
-  }
-
-  /**
-   * @param $item
-   * @return mixed
-   */
-  public function respondOne($records)
-  {
-    // todo extract out
-
-    // Provide an envelope for raw responses.  '_meta' and 'records' are the objects.
-    $response = array();
-
-    $meta = new \stdClass();
-    $meta->status = 'success or something...';
-    $meta->count = count($records);
-    $response['meta'] = $meta;
-
-    // Handle 0 record responses, or assign the records
-    if($response['meta']->count === 0)
-    {
-      // This is required to make the response JSON return an empty JS object.  Without
-      // this, the JSON return an empty array:  [] instead of {}
-      $response['records'] = new \stdClass();
-    }
-    else
-    {
-      $response['records'] = (object)$records->toArray();
-    }
-
-    return $response;
   }
 
   /**
@@ -149,6 +135,11 @@ class RESTController extends BaseController
     return $mapped;
   }
 
+  protected function parseExpandedFields($unparsed)
+  {
+    return explode(',', trim($unparsed, '()'));
+  }
+
   /**
    * Parses out partial fields to return in the response.
    * Unparsed:
@@ -163,40 +154,40 @@ class RESTController extends BaseController
     return explode(',', trim($unparsed, '()'));
 
     // todo - allow parsing of related models etc.
-    $fields = explode(',', trim($unparsed, '()'));
+    $requestedFields = explode(',', trim($unparsed, '()'));
 
-    $finalFields = [];
-    foreach($fields as $key => $field)
+    $models = [];
+    foreach($requestedFields as $key => $fieldName)
     {
-      $dotPos = strpos($field, '.');
-      // Related model: emails.email,email.id
+      // Related model: emails.email,email.id etc.
+      $dotPos = strpos($fieldName, '.');
       if($dotPos !== false)
       {
-        $model = substr($field, 0, $dotPos);
-        $field = substr($field, $dotPos + 1);
+        $modelName = substr($fieldName, 0, $dotPos);
+        $fieldName = substr($fieldName, $dotPos + 1);
 
         // Add to list of fields for related model
-        if(isset($finalFields[$model]))
+        if(isset($models[$modelName]))
         {
-          $finalFields[$model][] = $field;
+          $models[$modelName][] = $fieldName;
         }
         else
         {
-          $finalFields[$model] = [$field];
+          $models[$modelName] = [$fieldName];
         }
       }
       // Same model, fields only
       else
       {
-        if(!isset($finalFields['currentModel']))
+        if(!isset($models['currentModel']))
         {
-          $finalFields['currentModel'] = [];
+          $models['currentModel'] = [];
         }
-        $finalFields['currentModel'][] = $field;
+        $models['currentModel'][] = $fieldName;
       }
     }
 
-    return $finalFields;
+    return $models;
   }
 
   /**
@@ -212,6 +203,7 @@ class RESTController extends BaseController
     $request = $this->di->get('request');
     $searchParams = $request->get('q', null, null);
     $fields = $request->get('fields', null, null);
+    $expandFields = $request->get('expand', null, null);
 
     // Set limits and offset, elsewise allow them to have defaults set in the Controller
     $this->limit = ($request->get('limit', null, null)) ? : $this->limit;
@@ -243,41 +235,19 @@ class RESTController extends BaseController
       }
     }
 
+    // Expanded fields
+    if($expandFields)
+    {
+      $this->isExpand = true;
+      $this->expandFields = $this->parseExpandedFields($expandFields);
+    }
+
     // If there's a 'fields' paramter, this is a partial request.  Ensures all the requested fields
     // are allowed in partial responses.
     if($fields)
     {
       $this->isPartial = true;
       $this->partialFields = $this->parsePartialFields($fields);
-
-      /*
-       * todo - allow parsing of partial fields for related models
-       if(count($this->partialFields) > 0)
-      {
-        foreach($this->partialFields as $model)
-        {
-          var_dump($this->partialFields);
-          if(!isset($this->partialFields[$model]))
-          {
-            throw new Exception('Partial fields not available for ' . $model, 500);
-          }
-        }
-      }
-      die;*/
-
-      // Determines if fields is a strict subset of allowed fields
-      if(array_diff($this->partialFields, $this->allowedFields['partials']))
-      {
-        throw new HTTPException(
-          "The fields you asked for cannot be returned.",
-          401,
-          array(
-            'dev' => 'You requested to return fields that are not available to be returned in partial responses.',
-            'internalCode' => 'P1000',
-            'more' => '' // Could have link to documentation here.
-          )
-        );
-      }
     }
 
     return true;
@@ -337,49 +307,65 @@ class RESTController extends BaseController
   }
 
   /**
-   * Return this in your controllers, i.e. return $this->respond($user)
-   * This will prepare the response
-   *
-   * @param $recordOrRecords
-   * @return array
-   * @throws \PhalconAPI\Exceptions\HTTPException
+   * Respond with a single model, pass function name
    */
-  protected function respond($recordOrRecords)
+  protected function respondWithModel(Model $model, $functionName = null)
   {
-    // If its a "ResultSet" (array of records) that is being returned, convert it to an array
-    if($recordOrRecords instanceof Simple)
+    // Return a partial response
+    if($functionName && isset($this->partialFields))
     {
-      $recordOrRecords = $recordOrRecords->toArray();
+      // Validate that there are fields set for this method
+      if(!isset($this->allowedPartialFields[$functionName]))
+      {
+        throw new Exception('Partial fields not specified for ' . $functionName);
+      }
+
+      // Determines if fields is a strict subset of allowed fields
+      if(array_diff($this->partialFields, $this->allowedPartialFields[$functionName]))
+      {
+        // todo rework exception
+        throw new HTTPException(
+          "The fields you asked for cannot be returned.",
+          401,
+          array(
+            'dev' => 'You requested to return fields that are not available to be returned in partial responses.',
+            'internalCode' => 'P1000',
+            'more' => '' // Could have link to documentation here.
+          )
+        );
+      }
+      $response = $model->toArray($this->partialFields);
+    }
+    // Get the whole record
+    else
+    {
+      $response = $model->toArray();
     }
 
-    // Single record
-    if($recordOrRecords instanceof Model)
+    // Expand related models
+    if($this->isExpand)
     {
-      // Convert to array here
-      $recordOrRecords = $recordOrRecords->toArray();
+      // todo allow for parsed related fields, model.field
+      foreach($this->expandFields as $modelField)
+      {
+        $response[$modelField] = $model->getRelated($modelField)->toArray();
+      }
     }
 
-    // todo
-    if(!is_array($recordOrRecords))
-    {
-      // This is bad.  Throw a 500.  Responses should always be arrays.
-      throw new HTTPException(
-        "An error occured while retrieving records.",
-        500,
-        array(
-          'dev' => 'The records returned were malformed.',
-          'internalCode' => 'RESP1000',
-          'more' => ''
-        )
-      );
-    }
+    return $response;
+  }
 
-    // No results will return an empty array
-    if(count($recordOrRecords) < 1)
+  /**
+   * Respond with multiple models, a result set
+   */
+  protected function respondWithModels(ResultsetInterface $models)
+  {
+      // No results will return an empty array
+    if(count($models) < 1)
     {
       return array();
     }
 
-    return $recordOrRecords;
+    return $models->toArray();
   }
 }
