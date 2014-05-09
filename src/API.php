@@ -8,6 +8,7 @@ use Phalcon\Exception;
 use Phalcon\Mvc\Collection;
 use Phalcon\Mvc\Micro as MicroMVC;
 use PhalconAPI\Exceptions\HTTPException;
+use PhalconAPI\Responses\RawResponse;
 
 /**
  * Phalcon API Application
@@ -24,6 +25,9 @@ class API extends MicroMVC
 
   /** @var  string */
   private $collectionDir;
+
+  /** @var bool */
+  public $isInternal = false;
 
   public function __construct(DefaultDI $di, $srcDir = null)
   {
@@ -54,6 +58,11 @@ class API extends MicroMVC
     $this->after(
       function ()
       {
+        if($this->isInternal)
+        {
+          return;
+        }
+
         // OPTIONS have no body, send the headers & exit
         if($this->request->getMethod() == self::METHOD_OPTIONS)
         {

@@ -4,7 +4,7 @@
 namespace PhalconAPI;
 
 use Phalcon\Exception;
-use PhalconAPI\Responses\ResponseStub;
+use PhalconAPI\Responses\RawResponse;
 
 /**
  * SDK for Phalcon REST API
@@ -24,28 +24,45 @@ class SDK
   /** @var string */
   private $url;
 
+  /**
+   * Set the API instance
+   *
+   * @param API $app
+   * @return $this
+   */
   public function setApp(API $app)
   {
     $this->app = $app;
+    $this->app->isInternal = true;
+
+    return $this;
   }
 
+  /**
+   * Set the URL of the API
+   *
+   * @param $url
+   * @return $this
+   */
   public function setURL($url)
   {
     $this->url = $url;
+
+    return $this;
   }
 
   /**
    * Makes a GET call based on path/url
    * @param $path
    * @throws \Phalcon\Exception
-   * @return ResponseStub
+   * @return RawResponse
    */
   public function get($path)
   {
     // Get from the internal call if available
     if(isset($this->app))
     {
-      return $this->app->handle($path);
+      return $this->getRawResponse($path);
     }
 
     // Get via HTTP (cURL) if available
@@ -61,12 +78,34 @@ class SDK
     );
   }
 
+  private function getRawResponse($path)
+  {
+    // todo see if there is a better way that overriding $_REQUEST
+    // Take a backup of the request array
+    $request = $_REQUEST;
+
+    // Override the request params
+    if(isset($params) && count($params) > 0)
+    {
+      foreach($params as $key => $val)
+      {
+        $_REQUEST[$key] = $val;
+      }
+    }
+    $_REQUEST['type'] = 'raw';
+
+    $response = $this->app->handle($path);
+
+    $_REQUEST = $request;
+    return $response;
+  }
+
   /**
    * Makes a POST call based on path/url
    * todo this is not complete
    * @param $path
    * @throws \Phalcon\Exception
-   * @return ResponseStub
+   * @return RawResponse
    */
   public function post($path)
   {
@@ -94,7 +133,7 @@ class SDK
    * todo this is not complete
    * @param $path
    * @throws \Phalcon\Exception
-   * @return ResponseStub
+   * @return RawResponse
    */
   public function put($path)
   {
@@ -122,7 +161,7 @@ class SDK
    * todo this is not complete
    * @param $path
    * @throws \Phalcon\Exception
-   * @return ResponseStub
+   * @return RawResponse
    */
   public function delete($path)
   {
