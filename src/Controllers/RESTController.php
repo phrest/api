@@ -5,6 +5,8 @@ use Phalcon\Exception;
 use Phalcon\Mvc\Model;
 use PhalconAPI\Exceptions\HTTPException;
 use Phalcon\Mvc\Model\ResultsetInterface;
+use PhalconAPI\Responses\RawResponse;
+use PhalconAPI\Responses\ResponseMessage;
 
 /**
  * Base RESTful Controller.
@@ -311,17 +313,26 @@ class RESTController extends BaseController
    */
   protected function respondWithModel(Model $model, $functionName = null)
   {
+
+    $response = new RawResponse();
+
     // Return a partial response
     if($functionName && isset($this->partialFields))
     {
       // Validate that there are fields set for this method
       if(!isset($this->allowedPartialFields[$functionName]))
       {
-        throw new Exception('Partial fields not specified for ' . $functionName);
+        throw new Exception(
+          'Partial fields not specified for ' . $functionName
+        );
       }
 
       // Determines if fields is a strict subset of allowed fields
-      if(array_diff($this->partialFields, $this->allowedPartialFields[$functionName]))
+      if(array_diff(
+        $this->partialFields,
+        $this->allowedPartialFields[$functionName]
+      )
+      )
       {
         // todo rework exception
         throw new HTTPException(
@@ -334,12 +345,13 @@ class RESTController extends BaseController
           )
         );
       }
-      $response = $model->toArray($this->partialFields);
+      $response->data = $model->toArray($this->partialFields);
     }
     // Get the whole record
     else
     {
-      $response = $model->toArray();
+      $response->data = (object)$model->toArray();
+      $response->meta->count = count($model->toArray());
     }
 
     // Expand related models
@@ -352,6 +364,11 @@ class RESTController extends BaseController
       }
     }
 
+    $response->messages[] = new ResponseMessage(
+      'Success!',
+      ResponseMessage::TYPE_SUCCESS
+    );
+
     return $response;
   }
 
@@ -360,12 +377,21 @@ class RESTController extends BaseController
    */
   protected function respondWithModels(ResultsetInterface $models)
   {
-      // No results will return an empty array
-    if(count($models) < 1)
+    $response = new RawResponse();
+
+    if(count($models) == 0)
     {
-      return array();
+      $response->data = [];
+    }
+    else
+    {
+      foreach($models as $model)
+      {
+        $response->data[] = (object)$model->toArray();
+      }
+      $response->meta->count = count($models);
     }
 
-    return $models->toArray();
+    return $response;
   }
 }
