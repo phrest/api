@@ -5,7 +5,9 @@ use Phalcon\Exception;
 use Phalcon\Mvc\Model;
 use PhalconAPI\Exceptions\HTTPException;
 use Phalcon\Mvc\Model\ResultsetInterface;
-use PhalconAPI\Responses\RawResponse;
+use PhalconAPI\Responses\CSVResponse;
+use PhalconAPI\Responses\JSONResponse;
+use PhalconAPI\Responses\Response;
 use PhalconAPI\Responses\ResponseMessage;
 
 /**
@@ -20,6 +22,7 @@ use PhalconAPI\Responses\ResponseMessage;
  *   Partials:
  *     offset=20
  *
+ * @property Response $response
  */
 class RESTController extends BaseController
 {
@@ -93,9 +96,11 @@ class RESTController extends BaseController
 
   /**
    * Constructor, calls the parse method for the query string by default.
+   *
    * @param boolean $parseQueryString true Can be set to false if a controller needs to be called
    *        from a different controller, bypassing the $allowedFields parse
-   * @return void
+   * @throws \PhalconAPI\Exceptions\HTTPException
+   * @return \PhalconAPI\Controllers\RESTController
    */
   public function __construct($parseQueryString = true)
   {
@@ -104,8 +109,6 @@ class RESTController extends BaseController
     {
       $this->parseRequest($this->allowedFields);
     }
-
-    return;
   }
 
   /**
@@ -313,9 +316,6 @@ class RESTController extends BaseController
    */
   protected function respondWithModel(Model $model, $functionName = null)
   {
-
-    $response = new RawResponse();
-
     // Return a partial response
     if($functionName && isset($this->partialFields))
     {
@@ -345,13 +345,13 @@ class RESTController extends BaseController
           )
         );
       }
-      $response->data = $model->toArray($this->partialFields);
+      $this->response->data = $model->toArray($this->partialFields);
     }
     // Get the whole record
     else
     {
-      $response->data = (object)$model->toArray();
-      $response->meta->count = count($model->toArray());
+      $this->response->data = (object)$model->toArray();
+      $this->response->meta->count = count($model->toArray());
     }
 
     // Expand related models
@@ -360,16 +360,11 @@ class RESTController extends BaseController
       // todo allow for parsed related fields, model.field
       foreach($this->expandFields as $modelField)
       {
-        $response[$modelField] = $model->getRelated($modelField)->toArray();
+        //$this->response[$modelField] = $model->getRelated($modelField)->toArray();
       }
     }
 
-    $response->messages[] = new ResponseMessage(
-      'Success!',
-      ResponseMessage::TYPE_SUCCESS
-    );
-
-    return $response;
+    return $this->response;
   }
 
   /**
@@ -377,21 +372,20 @@ class RESTController extends BaseController
    */
   protected function respondWithModels(ResultsetInterface $models)
   {
-    $response = new RawResponse();
 
     if(count($models) == 0)
     {
-      $response->data = [];
+      $this->response->data = [];
     }
     else
     {
       foreach($models as $model)
       {
-        $response->data[] = (object)$model->toArray();
+        $this->response->data[] = (object)$model->toArray();
       }
-      $response->meta->count = count($models);
+      $this->response->meta->count = count($models);
     }
 
-    return $response;
+    return $this->response;
   }
 }

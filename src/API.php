@@ -8,7 +8,7 @@ use Phalcon\Exception;
 use Phalcon\Mvc\Collection;
 use Phalcon\Mvc\Micro as MicroMVC;
 use PhalconAPI\Exceptions\HTTPException;
-use PhalconAPI\Responses\RawResponse;
+use PhalconAPI\Responses\Response;
 
 /**
  * Phalcon API Application
@@ -16,9 +16,11 @@ use PhalconAPI\Responses\RawResponse;
 class API extends MicroMVC
 {
   const METHOD_OPTIONS = 'OPTIONS';
-  const RESPONSE_TYPE_CSV = 'csv';
-  const RESPONSE_TYPE_JSON = 'json';
-  const RESPONSE_TYPE_RAW = 'raw';
+  const METHOD_POST = 'POST';
+  const METHOD_HEAD = 'HEAD';
+  const METHOD_GET = 'GET';
+  const METHOD_PUT = 'PUT';
+  const METHOD_DELETE = 'DELETE';
 
   /** @var  string */
   private $srcDir;
@@ -54,10 +56,36 @@ class API extends MicroMVC
       }
     );
 
-    // Handle the response type
-    $this->after(
+    // Prepare the Response object
+    $di->set(
+      'response',
       function ()
       {
+        // Prepare relevant response object
+        switch($this->request->get('type'))
+        {
+          case Response::TYPE_RAW:
+            return new Response();
+            break;
+          case Response::TYPE_CSV:
+            return new CSVResponse();
+            break;
+          case Response::TYPE_JSON:
+          default:
+          return new JSONResponse();
+            break;
+        }
+      },
+      true
+    );
+
+    // Handle the response type
+    /*$this->after(
+      function ()
+      {
+
+        echo 2; die;
+        // An internal call simply returns the Response object
         if($this->isInternal)
         {
           return;
@@ -71,29 +99,39 @@ class API extends MicroMVC
           return;
         }
 
+        // Set data in the response
+
+        $response = $this->di->get('response');
+        $response->setData($this->getReturnedValue());
+
+        var_dump($this->getReturnedValue()); die;
+
+        return;
+
         // Respond by default as JSON
         if(
           !$this->request->get('type')
-          || $this->request->get('type') == self::RESPONSE_TYPE_JSON
+          || $this->request->get('type') == Response::TYPE_JSON
         )
         {
 
-          // Results returned from the route's controller.  All Controllers should return an array
-          $records = $this->getReturnedValue();
+          // Results returned from the route's controller.
+          // All Controllers should return an array
+          //$data = $this->getReturnedValue();
 
-          $response = new JSONResponse();
-          $response->useEnvelope(true) //this is default behavior
-          //->convertSnakeCase(true) //this is also default behavior
-          ->send($records);
+          var_dump($this->di->get('response'));
+          die;
+
+
 
           return;
         }
         else if($this->request->get('type') == self::RESPONSE_TYPE_CSV)
         {
 
-          $records = $this->getReturnedValue();
+          $data = $this->getReturnedValue();
           $response = new CSVResponse();
-          $response->useHeaderRow(true)->send($records);
+          $response->useHeaderRow(true)->send($data);
 
           return;
         }
@@ -110,7 +148,7 @@ class API extends MicroMVC
           );
         }
       }
-    );
+    );*/
 
     // todo
     $di->set(

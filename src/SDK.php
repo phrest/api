@@ -4,7 +4,7 @@
 namespace PhalconAPI;
 
 use Phalcon\Exception;
-use PhalconAPI\Responses\RawResponse;
+use PhalconAPI\Responses\Response;
 
 /**
  * SDK for Phalcon REST API
@@ -55,7 +55,7 @@ class SDK
    * Makes a GET call based on path/url
    * @param $path
    * @throws \Phalcon\Exception
-   * @return RawResponse
+   * @return Response
    */
   public function get($path)
   {
@@ -105,7 +105,7 @@ class SDK
    * todo this is not complete
    * @param $path
    * @throws \Phalcon\Exception
-   * @return RawResponse
+   * @return Response
    */
   public function post($path)
   {
@@ -133,7 +133,7 @@ class SDK
    * todo this is not complete
    * @param $path
    * @throws \Phalcon\Exception
-   * @return RawResponse
+   * @return Response
    */
   public function put($path)
   {
@@ -161,7 +161,7 @@ class SDK
    * todo this is not complete
    * @param $path
    * @throws \Phalcon\Exception
-   * @return RawResponse
+   * @return Response
    */
   public function delete($path)
   {

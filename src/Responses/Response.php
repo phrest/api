@@ -1,52 +1,82 @@
 <?php
+
+
 namespace PhalconAPI\Responses;
 
-class Response extends \Phalcon\DI\Injectable
-{
+use Phalcon\DI;
+use Phalcon\Http\Response as PhalconResponse;
+use PhalconAPI\API;
 
-  protected $head = false;
+class Response extends PhalconResponse
+{
+  const TYPE_RAW = 'raw';
+  const TYPE_JSON = 'json';
+  const TYPE_CSV = 'csv';
+
+  /** @var int */
+  public $code = 200;
+
+  /** @var ResponseMeta */
+  public $meta;
+
+  /** @var array */
+  public $data;
+
+  /** @var ResponseMessage[] */
+  public $messages;
+
+  /** @var bool Is a head request */
+  protected $isHEAD = false;
 
   public function __construct()
   {
-    //parent::__construct();
-    $di = \Phalcon\DI::getDefault();
-    $this->setDI($di);
-    if(strtolower($this->di->get('request')->getMethod()) === 'head')
+    // Prepare required response data
+    $this->meta = new ResponseMeta();
+
+    // Set this object in the DI container
+    // todo might not need this
+    //$di = DI::getDefault();
+    //$this->setDI($di);
+    //if(strtolower($di->get('request')->getMethod()) === API::METHOD_HEAD)
     {
-      $this->head = true;
+      // $this->isHEAD = true;
     }
   }
 
   /**
-   * In-Place, recursive conversion of array keys in snake_Case to camelCase
-   * @param  array $snakeArray Array with snake_keys
-   * @return  no return value, array is edited in place
+   * Set the status code
+   *
+   * @param int $code
+   * @param string $message
+   * @return \Phalcon\Http\ResponseInterface
    */
-  protected function arrayKeysToSnake($snakeArray)
+  public function setStatusCode($code, $message)
   {
-    foreach($snakeArray as $k => $v)
-    {
-      if(is_array($v))
-      {
-        $v = $this->arrayKeysToSnake($v);
-      }
-      $snakeArray[$this->snakeToCamel($k)] = $v;
-      if($this->snakeToCamel($k) != $k)
-      {
-        unset($snakeArray[$k]);
-      }
-    }
-    return $snakeArray;
+    $this->code = $code;
+
+    return parent::setStatusCode($code, $message);
   }
 
   /**
-   * Replaces underscores with spaces, uppercases the first letters of each word,
-   * lowercases the very first letter, then strips the spaces
-   * @param string $val String to be converted
-   * @return string     Converted string
+   * Add a message to the response object
+   * @param $text
+   * @param string $type
+   * @return $this
    */
-  protected function snakeToCamel($val)
+  public function addMessage($text, $type = ResponseMessage::TYPE_SUCCESS)
   {
-    return str_replace(' ', '', lcfirst(ucwords(str_replace('_', ' ', $val))));
+    $this->messages[] = new ResponseMessage(
+      $text,
+      $type
+    );
+
+    return $this;
+  }
+
+  public function setData($data)
+  {
+    $this->data = $data;
+
+    return $this;
   }
 }
