@@ -1,8 +1,8 @@
 <?php
-namespace PhalconAPI\Exceptions;
+namespace PhrestAPI\Exceptions;
 
-use PhalconAPI\Responses\CSVResponse;
-use PhalconAPI\Responses\JSONResponse;
+use PhrestAPI\Responses\CSVResponse;
+use PhrestAPI\Responses\JSONResponse;
 
 class HTTPException extends \Exception
 {

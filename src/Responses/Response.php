@@ -1,11 +1,11 @@
 <?php
 
 
-namespace PhalconAPI\Responses;
+namespace PhrestAPI\Responses;
 
 use Phalcon\DI;
 use Phalcon\Http\Response as PhalconResponse;
-use PhalconAPI\API;
+use PhrestAPI\API;
 
 class Response extends PhalconResponse
 {

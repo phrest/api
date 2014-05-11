@@ -1,5 +1,5 @@
 <?php
-namespace PhalconAPI\Responses;
+namespace PhrestAPI\Responses;
 
 class JSONResponse extends Response
 {

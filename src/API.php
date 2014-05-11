@@ -1,14 +1,14 @@
 <?php
-namespace PhalconAPI;
+namespace PhrestAPI;
 
-use PhalconAPI\Responses\CSVResponse;
-use PhalconAPI\Responses\JSONResponse;
+use PhrestAPI\Responses\CSVResponse;
+use PhrestAPI\Responses\JSONResponse;
 use Phalcon\DI\FactoryDefault as DefaultDI;
 use Phalcon\Exception;
 use Phalcon\Mvc\Collection;
 use Phalcon\Mvc\Micro as MicroMVC;
-use PhalconAPI\Exceptions\HTTPException;
-use PhalconAPI\Responses\Response;
+use PhrestAPI\Exceptions\HTTPException;
+use PhrestAPI\Responses\Response;
 
 /**
  * Phalcon API Application
@@ -255,7 +255,7 @@ class API extends MicroMVC
         error_log($exception->getTraceAsString());
 
         //HTTPException's send method provides the correct response headers and body
-        if(is_a($exception, 'PhalconAPI\\Exceptions\\HTTPException'))
+        if(is_a($exception, 'PhrestAPI\\Exceptions\\HTTPException'))
         {
           $exception->send();
         }

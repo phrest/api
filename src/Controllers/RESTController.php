@@ -1,14 +1,14 @@
 <?php
-namespace PhalconAPI\Controllers;
+namespace PhrestAPI\Controllers;
 
 use Phalcon\Exception;
 use Phalcon\Mvc\Model;
-use PhalconAPI\Exceptions\HTTPException;
+use PhrestAPI\Exceptions\HTTPException;
 use Phalcon\Mvc\Model\ResultsetInterface;
-use PhalconAPI\Responses\CSVResponse;
-use PhalconAPI\Responses\JSONResponse;
-use PhalconAPI\Responses\Response;
-use PhalconAPI\Responses\ResponseMessage;
+use PhrestAPI\Responses\CSVResponse;
+use PhrestAPI\Responses\JSONResponse;
+use PhrestAPI\Responses\Response;
+use PhrestAPI\Responses\ResponseMessage;
 
 /**
  * Base RESTful Controller.
@@ -99,8 +99,8 @@ class RESTController extends BaseController
    *
    * @param boolean $parseQueryString true Can be set to false if a controller needs to be called
    *        from a different controller, bypassing the $allowedFields parse
-   * @throws \PhalconAPI\Exceptions\HTTPException
-   * @return \PhalconAPI\Controllers\RESTController
+   * @throws \PhrestAPI\Exceptions\HTTPException
+   * @return \PhrestAPI\Controllers\RESTController
    */
   public function __construct($parseQueryString = true)
   {

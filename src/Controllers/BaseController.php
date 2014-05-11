@@ -1,5 +1,5 @@
 <?php
-namespace PhalconAPI\Controllers;
+namespace PhrestAPI\Controllers;
 
 /**
  *  \Phalcon\Mvc\Controller has a final __construct() method, so we can't

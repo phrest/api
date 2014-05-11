@@ -1,5 +1,5 @@
 <?php
-namespace PhalconAPI\Responses;
+namespace PhrestAPI\Responses;
 
 class CSVResponse extends Response{
 

@@ -1,10 +1,10 @@
 <?php
 
 
-namespace PhalconAPI;
+namespace PhrestAPI;
 
 use Phalcon\Exception;
-use PhalconAPI\Responses\Response;
+use PhrestAPI\Responses\Response;
 
 /**
  * SDK for Phalcon REST API

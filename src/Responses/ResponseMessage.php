@@ -1,7 +1,7 @@
 <?php
 
 
-namespace PhalconAPI\Responses;
+namespace PhrestAPI\Responses;
 
 
 class ResponseMessage
