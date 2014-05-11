@@ -13,9 +13,6 @@ class Response extends PhalconResponse
   const TYPE_JSON = 'json';
   const TYPE_CSV = 'csv';
 
-  /** @var int */
-  public $code = 200;
-
   /** @var ResponseMeta */
   public $meta;
 
@@ -52,7 +49,8 @@ class Response extends PhalconResponse
    */
   public function setStatusCode($code, $message)
   {
-    $this->code = $code;
+    $this->meta->statusCode = $code;
+    $this->meta->statusMessage = $message;
 
     return parent::setStatusCode($code, $message);
   }
@@ -73,10 +71,12 @@ class Response extends PhalconResponse
     return $this;
   }
 
-  public function setData($data)
+  /**
+   * @param \Exception $exception
+   * @throws \Exception
+   */
+  public function sendException(\Exception $exception)
   {
-    $this->data = $data;
-
-    return $this;
+    throw $exception;
   }
 }

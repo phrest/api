@@ -7,7 +7,10 @@ namespace PhrestAPI\Responses;
 class ResponseMeta
 {
   /** @var int */
-  public $status;
+  public $statusCode = 200;
+
+  /** @var string */
+  public $statusMessage;
 
   /** @var int */
   public $count = 0;

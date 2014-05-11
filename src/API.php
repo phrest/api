@@ -1,6 +1,7 @@
 <?php
 namespace PhrestAPI;
 
+use Phalcon\DI;
 use PhrestAPI\Responses\CSVResponse;
 use PhrestAPI\Responses\JSONResponse;
 use Phalcon\DI\FactoryDefault as DefaultDI;
@@ -45,7 +46,7 @@ class API extends MicroMVC
     $this->collectionDir = $this->srcDir . '/Collections/';
 
     // Set the Exception handler
-    $this->setExceptionHandler();
+    $this->setExceptionHandler($di);
 
     // Collections are how we handler our routes
     $di->set(
@@ -72,7 +73,7 @@ class API extends MicroMVC
             break;
           case Response::TYPE_JSON:
           default:
-          return new JSONResponse();
+            return new JSONResponse();
             break;
         }
       },
@@ -209,8 +210,12 @@ class API extends MicroMVC
 
     // Handle a 404
     $this->notFound(
-      function ()
+      function () use ($di)
       {
+        /** @var Response $response */
+        $response = $di->get('response');
+
+
         throw new HTTPException(
           '404 Not Found.',
           404,
@@ -245,24 +250,27 @@ class API extends MicroMVC
   /**
    * If the application throws an HTTPException, respond correctly (json etc.)
    */
-  public function setExceptionHandler()
+  public function setExceptionHandler(DI $di)
   {
     set_exception_handler(
-      function ($exception)
+      function ($exception) use ($di)
       {
         /** @var $exception Exception */
+
+        // Handled exceptions
+        if(is_a($exception, 'PhrestAPI\\Exceptions\\HandledException'))
+        {
+          /** @var Response $response */
+          $response = $di->get('response');
+          return $response->sendException($exception);
+        }
+
+        // Log the exception
         error_log($exception);
         error_log($exception->getTraceAsString());
 
-        //HTTPException's send method provides the correct response headers and body
-        if(is_a($exception, 'PhrestAPI\\Exceptions\\HTTPException'))
-        {
-          $exception->send();
-        }
-        else
-        {
-          throw $exception;
-        }
+        // Throw unhandled exceptions
+        throw $exception;
       }
     );
   }
