@@ -212,19 +212,7 @@ class API extends MicroMVC
     $this->notFound(
       function () use ($di)
       {
-        /** @var Response $response */
-        $response = $di->get('response');
-
-
-        throw new HTTPException(
-          '404 Not Found.',
-          404,
-          array(
-            'dev' => 'That route was not found on the server.',
-            'internalCode' => 'NF1000',
-            'more' => 'Check route for mispellings.'
-          )
-        );
+        throw new \Exception('Route not matched');
       }
     );
 
