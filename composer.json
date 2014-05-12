@@ -3,7 +3,7 @@
   "type":        "library",
   "description": "REST API Package for Phalcon PHP",
   "keywords":    ["phalcon", "rest", "api", "api first", "apigee"],
-  "homepage":    "https://github.com/torches/phalcon-api",
+  "homepage":    "https://github.com/phrest/api",
   "license":     "MIT",
   "authors":     [
     {
