@@ -14,7 +14,7 @@ use PhrestAPI\Responses\Response;
 /**
  * Phalcon API Application
  */
-class API extends MicroMVC
+class PhrestAPI extends MicroMVC
 {
   const METHOD_OPTIONS = 'OPTIONS';
   const METHOD_POST = 'POST';

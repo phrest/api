@@ -5,7 +5,7 @@ namespace PhrestAPI\Responses;
 
 use Phalcon\DI;
 use Phalcon\Http\Response as PhalconResponse;
-use PhrestAPI\API;
+use PhrestAPI\PhrestAPI;
 
 class Response extends PhalconResponse
 {
