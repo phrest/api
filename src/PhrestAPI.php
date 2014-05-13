@@ -25,7 +25,7 @@ class PhrestAPI extends MicroMVC
   const METHOD_DELETE = 'DELETE';
 
   /** @var  string */
-  private $srcDir;
+  protected $srcDir;
 
   /** @var  string */
   private $collectionDir;
