@@ -12,61 +12,61 @@ class CollectionRoute
   const TYPE_DELETE = 'delete';
 
   public $type;
-  public $route;
-  public $action;
+  public $routePattern;
+  public $controllerAction;
 
-  public function __construct($type, $route, $action)
+  public function __construct($type, $routePattern, $controllerAction)
   {
     $this->type = $type;
-    $this->route = $route;
-    $this->action = $action;
+    $this->routePattern = $routePattern;
+    $this->controllerAction = $controllerAction;
   }
 
   /**
    * Adds a GET
    *
-   * @param $route
-   * @param $action
+   * @param $routePattern
+   * @param $controllerAction
    * @return CollectionRoute
    */
-  public static function get($route, $action)
+  public static function get($routePattern, $controllerAction)
   {
-    return new self(self::TYPE_GET, $route, $action);
+    return new self(self::TYPE_GET, $routePattern, $controllerAction);
   }
 
   /**
    * Adds a POST
    *
-   * @param $route
-   * @param $action
+   * @param $routePattern
+   * @param $controllerAction
    * @return CollectionRoute
    */
-  public static function post($route, $action)
+  public static function post($routePattern, $controllerAction)
   {
-    return new self(self::TYPE_POST, $route, $action);
+    return new self(self::TYPE_POST, $routePattern, $controllerAction);
   }
 
   /**
    * Adds a PUT
    *
-   * @param $route
-   * @param $action
+   * @param $routePattern
+   * @param $controllerAction
    * @return CollectionRoute
    */
-  public static function put($route, $action)
+  public static function put($routePattern, $controllerAction)
   {
-    return new self(self::TYPE_PUT, $route, $action);
+    return new self(self::TYPE_PUT, $routePattern, $controllerAction);
   }
 
   /**
    * Adds a DELETE
    *
-   * @param $route
-   * @param $action
+   * @param $routePattern
+   * @param $controllerAction
    * @return CollectionRoute
    */
-  public static function delete($route, $action)
+  public static function delete($routePattern, $controllerAction)
   {
-    return new self(self::TYPE_DELETE, $route, $action);
+    return new self(self::TYPE_DELETE, $routePattern, $controllerAction);
   }
 }

@@ -255,16 +255,16 @@ class PhrestAPI extends MicroMVC
         switch($route->type)
         {
           case CollectionRoute::TYPE_GET:
-            $phalconCollection->get($route->route, $route->action);
+            $phalconCollection->get($route->routePattern, $route->controllerAction);
             break;
           case CollectionRoute::TYPE_POST:
-            $phalconCollection->post($route->route, $route->action);
+            $phalconCollection->post($route->routePattern, $route->controllerAction);
             break;
           case CollectionRoute::TYPE_PUT:
-            $phalconCollection->put($route->route, $route->action);
+            $phalconCollection->put($route->routePattern, $route->controllerAction);
             break;
           case CollectionRoute::TYPE_DELETE:
-            $phalconCollection->delete($route->route, $route->action);
+            $phalconCollection->delete($route->routePattern, $route->controllerAction);
             break;
           default:
             throw new \Exception('Invalid CollectionRoute');
