@@ -2,13 +2,14 @@
 namespace PhrestAPI;
 
 use Phalcon\DI;
+use PhrestAPI\Collections\Collection;
+use Phalcon\Mvc\Micro\Collection as PhalconCollection;
+use PhrestAPI\Collections\CollectionRoute;
 use PhrestAPI\Responses\CSVResponse;
 use PhrestAPI\Responses\JSONResponse;
 use Phalcon\DI\FactoryDefault as DefaultDI;
 use Phalcon\Exception;
-use Phalcon\Mvc\Collection;
 use Phalcon\Mvc\Micro as MicroMVC;
-use PhrestAPI\Exceptions\HTTPException;
 use PhrestAPI\Responses\Response;
 
 /**
@@ -53,7 +54,7 @@ class PhrestAPI extends MicroMVC
       'collections',
       function ()
       {
-        return $this->getCollections();
+        return $this->getPhalconCollections();
       }
     );
 
@@ -191,7 +192,7 @@ class PhrestAPI extends MicroMVC
         // JSON body could not be parsed, throw exception
         if($in === null)
         {
-          throw new HTTPException(
+          throw new \Exception(
             'There was a problem understanding the data sent to the server by the application.',
             409,
             array(
@@ -221,6 +222,60 @@ class PhrestAPI extends MicroMVC
     {
       $this->mount($collection);
     }
+  }
+
+  /**
+   * @return Collection[]
+   * @throws \Exception
+   */
+  protected function getCollections()
+  {
+    throw new \Exception('No collections defined');
+  }
+
+  private function getPhalconCollections()
+  {
+    $collections = $this->getCollections();
+
+    $phalconCollections = [];
+    foreach($collections as $collection)
+    {
+      $phalconCollection = new PhalconCollection();
+
+      $phalconCollection
+        // It is advised to use a version number i.e. /v1/ in the URL
+        ->setPrefix($collection->prefix)
+        // Must be a string in order to support lazy loading
+        ->setHandler($collection->controller)
+        ->setLazy(true);
+
+      foreach($collection->routes as $route)
+      {
+        // Switch should be quicker
+        switch($route->type)
+        {
+          case CollectionRoute::TYPE_GET:
+            $phalconCollection->get($route->route, $route->action);
+            break;
+          case CollectionRoute::TYPE_POST:
+            $phalconCollection->post($route->route, $route->action);
+            break;
+          case CollectionRoute::TYPE_PUT:
+            $phalconCollection->put($route->route, $route->action);
+            break;
+          case CollectionRoute::TYPE_DELETE:
+            $phalconCollection->delete($route->route, $route->action);
+            break;
+          default:
+            throw new \Exception('Invalid CollectionRoute');
+            break;
+        }
+
+        $phalconCollections[] = $phalconCollection;
+      }
+    }
+
+    return $phalconCollections;
   }
 
   /**
@@ -261,40 +316,5 @@ class PhrestAPI extends MicroMVC
         throw $exception;
       }
     );
-  }
-
-  /**
-   * Checks in the collections folder for files to build the routes from
-   *
-   * @throws \Phalcon\Exception
-   * @return Collection[]
-   */
-  private function getCollections()
-  {
-    $collections = array();
-
-    // todo implement caching here, its slow
-    $collectionFiles = scandir($this->collectionDir);
-
-    foreach($collectionFiles as $collectionFile)
-    {
-      $pathinfo = pathinfo($collectionFile);
-
-      //Only include php files
-      if($pathinfo['extension'] === 'php')
-      {
-
-        // The collection files return their collection objects, so mount
-        // them directly into the router.
-        $collections[] = include($this->collectionDir . '/' . $collectionFile);
-      }
-    }
-
-    if(!count($collections))
-    {
-      throw new Exception('No collection files found');
-    }
-
-    return $collections;
   }
 }
