@@ -228,7 +228,7 @@ class PhrestAPI extends MicroMVC
    * @return Collection[]
    * @throws \Exception
    */
-  protected function getCollections()
+  public function getCollections()
   {
     throw new \Exception('No collections defined');
   }
