@@ -153,7 +153,7 @@ class PhrestAPI extends MicroMVC
     );*/
 
     // todo
-    $di->set(
+    /*$di->set(
       'modelsCache',
       function ()
       {
@@ -174,7 +174,7 @@ class PhrestAPI extends MicroMVC
 
         return $cache;
       }
-    );
+    );*/
 
     /**
      * If our request contains a body, it has to be valid JSON.  This parses the
