@@ -6,8 +6,10 @@ namespace PhrestAPI\Collections;
 
 class CollectionRoute
 {
+  // todo move all of these into one place, they are repeated in other classes
   const TYPE_GET = 'get';
   const TYPE_PUT = 'put';
+  const TYPE_PATCH = 'patch';
   const TYPE_POST = 'post';
   const TYPE_DELETE = 'delete';
 

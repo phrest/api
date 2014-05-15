@@ -1,6 +1,7 @@
 <?php
 namespace PhrestAPI\Controllers;
 
+use Phalcon\DI;
 use Phalcon\Exception;
 use Phalcon\Mvc\Model;
 use PhrestAPI\Exceptions\HTTPException;
@@ -201,11 +202,20 @@ class RESTController extends BaseController
    * Sets Controller fields for these variables.
    *
    * @param  array $allowedFields Allowed fields array for search and partials
+   * @throws \PhrestAPI\Exceptions\HTTPException
    * @return boolean              Always true if no exception is thrown
    */
   protected function parseRequest($allowedFields)
   {
     $request = $this->di->get('request');
+    $method = $request->get('method', null, null);
+
+    $di = DI::getDefault();
+    $di->set('apiRequestMethod', $method);
+
+    //echo $method; die;
+    //var_dump($method); die;
+    //$this->
     $searchParams = $request->get('q', null, null);
     $fields = $request->get('fields', null, null);
     $expandFields = $request->get('expand', null, null);
@@ -351,7 +361,7 @@ class RESTController extends BaseController
     else
     {
       $this->response->data = (object)$model->toArray();
-      $this->response->meta->count = count($model->toArray());
+      $this->response->meta->count = $this->response->data;
     }
 
     // Expand related models
