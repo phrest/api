@@ -3,16 +3,10 @@
 
 namespace PhrestAPI\Collections;
 
+use PhrestAPI\Request\PhrestRequest;
 
 class CollectionRoute
 {
-  // todo move all of these into one place, they are repeated in other classes
-  const TYPE_GET = 'get';
-  const TYPE_PUT = 'put';
-  const TYPE_PATCH = 'patch';
-  const TYPE_POST = 'post';
-  const TYPE_DELETE = 'delete';
-
   public $type;
   public $routePattern;
   public $controllerAction;
@@ -29,11 +23,14 @@ class CollectionRoute
    *
    * @param $routePattern
    * @param $controllerAction
+   *
    * @return CollectionRoute
    */
   public static function get($routePattern, $controllerAction)
   {
-    return new self(self::TYPE_GET, $routePattern, $controllerAction);
+    return new self(
+      PhrestRequest::METHOD_GET, $routePattern, $controllerAction
+    );
   }
 
   /**
@@ -41,11 +38,12 @@ class CollectionRoute
    *
    * @param $routePattern
    * @param $controllerAction
+   *
    * @return CollectionRoute
    */
   public static function post($routePattern, $controllerAction)
   {
-    return new self(self::TYPE_POST, $routePattern, $controllerAction);
+    return new self(PhrestRequest::METHOD_POST, $routePattern, $controllerAction);
   }
 
   /**
@@ -53,11 +51,12 @@ class CollectionRoute
    *
    * @param $routePattern
    * @param $controllerAction
+   *
    * @return CollectionRoute
    */
   public static function put($routePattern, $controllerAction)
   {
-    return new self(self::TYPE_PUT, $routePattern, $controllerAction);
+    return new self(PhrestRequest::METHOD_PUT, $routePattern, $controllerAction);
   }
 
   /**
@@ -65,10 +64,11 @@ class CollectionRoute
    *
    * @param $routePattern
    * @param $controllerAction
+   *
    * @return CollectionRoute
    */
   public static function delete($routePattern, $controllerAction)
   {
-    return new self(self::TYPE_DELETE, $routePattern, $controllerAction);
+    return new self(PhrestRequest::METHOD_DELETE, $routePattern, $controllerAction);
   }
 }

@@ -6,6 +6,7 @@ use PhrestAPI\Collections\Collection;
 use Phalcon\Mvc\Micro\Collection as PhalconCollection;
 use PhrestAPI\Collections\CollectionRoute;
 use PhrestAPI\DI\PhrestDI;
+use PhrestAPI\Request\PhrestRequest;
 use PhrestAPI\Responses\CSVResponse;
 use PhrestAPI\Responses\JSONResponse;
 use Phalcon\DI\FactoryDefault as DefaultDI;
@@ -100,31 +101,31 @@ class PhrestAPI extends MicroMVC
         // Switch should be quicker
         switch($route->type)
         {
-          case CollectionRoute::TYPE_GET:
+          case PhrestRequest::METHOD_GET:
             $phalconCollection->get(
               $route->routePattern,
               $route->controllerAction
             );
             break;
-          case CollectionRoute::TYPE_POST:
+          case PhrestRequest::METHOD_POST:
             $phalconCollection->post(
               $route->routePattern,
               $route->controllerAction
             );
             break;
-          case CollectionRoute::TYPE_PUT:
+          case PhrestRequest::METHOD_PUT:
             $phalconCollection->put(
               $route->routePattern,
               $route->controllerAction
             );
             break;
-          case CollectionRoute::TYPE_PATCH:
+          case PhrestRequest::METHOD_PATCH:
             $phalconCollection->patch(
               $route->routePattern,
               $route->controllerAction
             );
             break;
-          case CollectionRoute::TYPE_DELETE:
+          case PhrestRequest::METHOD_DELETE:
             $phalconCollection->delete(
               $route->routePattern,
               $route->controllerAction
