@@ -12,7 +12,8 @@ use PhrestAPI\Responses\JSONResponse;
 use Phalcon\DI\FactoryDefault as DefaultDI;
 use Phalcon\Exception;
 use Phalcon\Mvc\Micro as MicroMVC;
-use PhrestAPI\Responses\Response;
+//use PhrestAPI\Responses\Response;
+use Phalcon\Http\Response;
 
 /**
  * Phalcon API Application
@@ -26,7 +27,7 @@ class PhrestAPI extends MicroMVC
   private $collectionDir;
 
   /** @var bool */
-  public $isInternal = false;
+  public $isInternalRequest = false;
 
   public function __construct(PhrestDI $di, $srcDir = null)
   {
@@ -53,7 +54,6 @@ class PhrestAPI extends MicroMVC
     // Set the Exception handler
     $this->setExceptionHandler($di);
 
-
     $this->setDI($di);
 
     // Handle a 404
@@ -69,6 +69,56 @@ class PhrestAPI extends MicroMVC
     {
       $this->mount($collection);
     }
+
+    // Send the response if required
+    $this->after(
+      function () use ($di)
+      {
+        // Internal request will return the response
+        if($this->isInternalRequest)
+        {
+          return;
+        }
+
+        $controllerResponse = $this->getReturnedValue();
+
+        //var_dump($controllerResponse);
+
+
+        /** @var PhrestRequest $response */
+        $request = $di->get('request');
+
+        if($request->isJSON())
+        {
+          $di->set('response', new JSONResponse($controllerResponse));
+        }
+
+        /** @var Response $response */
+        $response = $di->get('response');
+        $response->send();
+
+        //var_dump($di->get('response'));
+
+
+
+        //$response->setContent($controllerResponse);
+        //$response->send();
+        //return $controllerResponse;
+        //var_dump($this->getReturnedValue());
+
+      }
+    );
+  }
+
+  /**
+   * Tells the API this is an internal API call
+   * @return $this
+   */
+  public function enableInternalRequest()
+  {
+    $this->isInternalRequest = true;
+
+    return $this;
   }
 
   /**
@@ -145,7 +195,9 @@ class PhrestAPI extends MicroMVC
 
   /**
    * Override the standard "Collection" directory path
+   *
    * @param $collectionDir
+   *
    * @return $this
    */
   public function setCollectionDir($collectionDir)

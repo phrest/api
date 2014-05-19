@@ -36,7 +36,7 @@ class PhrestDI extends PhalconDI
     );
 
     // Prepare the Response object
-    $this->set(
+    /*$this->set(
       'response',
       function ()
       {
@@ -56,6 +56,6 @@ class PhrestDI extends PhalconDI
         }
       },
       true
-    );
+    );*/
   }
 }

@@ -9,18 +9,18 @@ use PhrestAPI\PhrestAPI;
 
 class Response extends PhalconResponse
 {
-  const TYPE_RAW = 'raw';
+  /*const TYPE_RAW = 'raw';
   const TYPE_JSON = 'json';
-  const TYPE_CSV = 'csv';
+  const TYPE_CSV = 'csv';*/
 
   /** @var ResponseMeta */
-  public $meta;
+  private $meta;
 
   /** @var array */
-  public $data;
+  //public $data;
 
   /** @var ResponseMessage[] */
-  public $messages;
+  private $messages;
 
   /** @var bool Is a head request */
   protected $isHEAD = false;
@@ -29,15 +29,42 @@ class Response extends PhalconResponse
   {
     // Prepare required response data
     $this->meta = new ResponseMeta();
+  }
 
-    // Set this object in the DI container
-    // todo might not need this
-    //$di = DI::getDefault();
-    //$this->setDI($di);
-    //if(strtolower($di->get('request')->getMethod()) === API::METHOD_HEAD)
-    {
-      // $this->isHEAD = true;
-    }
+  /**
+   * @return ResponseMessage[]
+   */
+  public function getMessages()
+  {
+    return $this->messages;
+  }
+
+  /**
+   * @return ResponseMeta
+   */
+  public function getMeta()
+  {
+    return $this->meta;
+  }
+
+  /**
+   * @param ResponseMeta $meta
+   *
+   * @return $this
+   */
+  public function setMeta(ResponseMeta $meta)
+  {
+    $this->meta = $meta;
+
+    return $this;
+  }
+
+  /**
+   * @param $count
+   */
+  public function setMetaCount($count)
+  {
+    $this->meta->count = $count;
   }
 
   /**
@@ -78,5 +105,15 @@ class Response extends PhalconResponse
   public function sendException(\Exception $exception)
   {
     throw $exception;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getData()
+  {
+    // todo return json_decode(json_encode($this)); may be quicker
+
+    return call_user_func('get_object_vars', $this);
   }
 }

@@ -361,7 +361,7 @@ class RESTController extends BaseController
     else
     {
       $this->response->data = (object)$model->toArray();
-      $this->response->meta->count = $this->response->data;
+      $this->response->meta->count = count($this->response->data);
     }
 
     // Expand related models

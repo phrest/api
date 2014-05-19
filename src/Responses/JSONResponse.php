@@ -5,12 +5,18 @@ class JSONResponse extends Response
 {
   protected $envelope = true;
 
-  public function __construct()
+  public $meta;
+  public $messages;
+  public $data;
+
+
+  public function __construct(Response $response)
   {
     parent::__construct();
 
-    // Set headers
-    $this->setContentType('application/json');
+    $this->data = $response->getData();
+    $this->meta = $response->getMeta();
+    $this->messages = $response->getMessages();
   }
 
   /**
@@ -20,6 +26,8 @@ class JSONResponse extends Response
    */
   public function send()
   {
+    // Set headers
+    $this->setContentType('application/json');
 
     // Set content
     if(!$this->isHEAD)
@@ -31,6 +39,11 @@ class JSONResponse extends Response
     return parent::send();
   }
 
+  /**
+   * @param \Exception $exception
+   *
+   * @return \Phalcon\Http\ResponseInterface|void
+   */
   public function sendException(\Exception $exception)
   {
     $this->setStatusCode($exception->getCode(), $exception->getMessage());

@@ -28,4 +28,9 @@ class PhrestRequest extends Request
 
     return parent::getMethod();
   }
+
+  public function isJSON()
+  {
+    return true;
+  }
 }
