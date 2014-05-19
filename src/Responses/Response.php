@@ -1,23 +1,14 @@
 <?php
 
-
 namespace PhrestAPI\Responses;
 
 use Phalcon\DI;
-use Phalcon\Http\Response as PhalconResponse;
-use PhrestAPI\PhrestAPI;
 
-class Response extends PhalconResponse
+class Response
 {
-  /*const TYPE_RAW = 'raw';
-  const TYPE_JSON = 'json';
-  const TYPE_CSV = 'csv';*/
 
   /** @var ResponseMeta */
   private $meta;
-
-  /** @var array */
-  //public $data;
 
   /** @var ResponseMessage[] */
   private $messages;
@@ -27,7 +18,6 @@ class Response extends PhalconResponse
 
   public function __construct()
   {
-    // Prepare required response data
     $this->meta = new ResponseMeta();
   }
 
@@ -70,8 +60,9 @@ class Response extends PhalconResponse
   /**
    * Set the status code
    *
-   * @param int $code
+   * @param int    $code
    * @param string $message
+   *
    * @return \Phalcon\Http\ResponseInterface
    */
   public function setStatusCode($code, $message)
@@ -84,8 +75,10 @@ class Response extends PhalconResponse
 
   /**
    * Add a message to the response object
-   * @param $text
+   *
+   * @param        $text
    * @param string $type
+   *
    * @return $this
    */
   public function addMessage($text, $type = ResponseMessage::TYPE_SUCCESS)
@@ -100,6 +93,7 @@ class Response extends PhalconResponse
 
   /**
    * @param \Exception $exception
+   *
    * @throws \Exception
    */
   public function sendException(\Exception $exception)
@@ -108,6 +102,8 @@ class Response extends PhalconResponse
   }
 
   /**
+   * Get the object data (public properties)
+   *
    * @return mixed
    */
   public function getData()
