@@ -96,38 +96,8 @@ class PhrestAPI extends MicroMVC
         /** @var Response $response */
         $response = $di->get('response');
         $response->send();
-
-        //var_dump($di->get('response'));
-
-
-
-        //$response->setContent($controllerResponse);
-        //$response->send();
-        //return $controllerResponse;
-        //var_dump($this->getReturnedValue());
-
       }
     );
-  }
-
-  /**
-   * Tells the API this is an internal API call
-   * @return $this
-   */
-  public function enableInternalRequest()
-  {
-    $this->isInternalRequest = true;
-
-    return $this;
-  }
-
-  /**
-   * @return Collection[]
-   * @throws \Exception
-   */
-  public function getCollections()
-  {
-    throw new \Exception('No collections defined');
   }
 
   private function getPhalconCollections()

@@ -22,6 +22,11 @@ class Response
   }
 
   /**
+   * Called by Phalcon, todo see if can get rid of it
+   */
+  protected function isSent(){}
+
+  /**
    * @return ResponseMessage[]
    */
   public function getMessages()
