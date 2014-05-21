@@ -13,5 +13,5 @@ class ResponseMeta
   public $statusMessage;
 
   /** @var int */
-  public $count = 0;
+  public $count = 1;
 }
