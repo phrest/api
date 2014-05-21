@@ -12,7 +12,6 @@ use PhrestAPI\Responses\JSONResponse;
 use Phalcon\DI\FactoryDefault as DefaultDI;
 use Phalcon\Exception;
 use Phalcon\Mvc\Micro as MicroMVC;
-//use PhrestAPI\Responses\Response;
 use Phalcon\Http\Response;
 
 /**

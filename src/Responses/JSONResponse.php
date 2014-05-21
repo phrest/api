@@ -1,7 +1,9 @@
 <?php
 namespace PhrestAPI\Responses;
 
-class JSONResponse extends Response
+use Phalcon\Http\Response as HTTPResponse;
+
+class JSONResponse extends HTTPResponse
 {
   protected $envelope = true;
 
