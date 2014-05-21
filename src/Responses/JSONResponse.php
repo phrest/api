@@ -2,6 +2,7 @@
 namespace PhrestAPI\Responses;
 
 use Phalcon\Http\Response as HTTPResponse;
+use PhrestAPI\Request\PhrestRequest;
 
 class JSONResponse extends HTTPResponse
 {
@@ -31,8 +32,11 @@ class JSONResponse extends HTTPResponse
     // Set headers
     $this->setContentType('application/json');
 
+    /** @var PhrestRequest $request */
+    $request = $this->getDI()->get('request');
+
     // Set content
-    if(!$this->isHEAD)
+    if(!$request->isHead())
     {
       $this->setJsonContent($this);
     }
