@@ -79,6 +79,16 @@ class Response
   }
 
   /**
+   * Get the status code
+   *
+   * @return int
+   */
+  public function getStatusCode()
+  {
+    return $this->meta->statusCode;
+  }
+
+  /**
    * Add a message to the response object
    *
    * @param        $text
@@ -94,6 +104,16 @@ class Response
     );
 
     return $this;
+  }
+
+  /**
+   * Get the status message
+   *
+   * @return int
+   */
+  public function getStatusMessage()
+  {
+    return $this->meta->statusMessage;
   }
 
   /**
