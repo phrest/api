@@ -43,7 +43,9 @@ class CollectionRoute
    */
   public static function post($routePattern, $controllerAction)
   {
-    return new self(PhrestRequest::METHOD_POST, $routePattern, $controllerAction);
+    return new self(
+      PhrestRequest::METHOD_POST, $routePattern, $controllerAction
+    );
   }
 
   /**
@@ -56,7 +58,26 @@ class CollectionRoute
    */
   public static function put($routePattern, $controllerAction)
   {
-    return new self(PhrestRequest::METHOD_PUT, $routePattern, $controllerAction);
+    return new self(
+      PhrestRequest::METHOD_PUT, $routePattern, $controllerAction
+    );
+  }
+
+  /**
+   * Adds a PATCH
+   *
+   * @param $routePattern
+   * @param $controllerAction
+   *
+   * @return CollectionRoute
+   */
+  public static function patch($routePattern, $controllerAction)
+  {
+    return new self(
+      PhrestRequest::METHOD_PATCH,
+      $routePattern,
+      $controllerAction
+    );
   }
 
   /**
@@ -69,6 +90,10 @@ class CollectionRoute
    */
   public static function delete($routePattern, $controllerAction)
   {
-    return new self(PhrestRequest::METHOD_DELETE, $routePattern, $controllerAction);
+    return new self(
+      PhrestRequest::METHOD_DELETE,
+      $routePattern,
+      $controllerAction
+    );
   }
 }
