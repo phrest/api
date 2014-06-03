@@ -138,8 +138,4 @@ class Response
     return call_user_func('get_object_vars', $this);
   }
 
-  public function getContent(){
-    return '';
-  }
-
 }
