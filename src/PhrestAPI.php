@@ -191,7 +191,12 @@ class PhrestAPI extends MicroMVC
         {
           /** @var Response $response */
           $response = $di->get('response');
-          return $response->sendException($exception);
+
+          //Set the content of the response
+          $response->setContent($exception->getMessage());
+
+          //Send response to the client
+          return $response->send();
         }
 
         // Log the exception
