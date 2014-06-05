@@ -3,7 +3,6 @@
 
 namespace PhrestAPI\Request;
 
-
 use Phalcon\Http\Request;
 
 class PhrestRequest extends Request
@@ -17,6 +16,8 @@ class PhrestRequest extends Request
   const METHOD_DELETE = 'DELETE';
 
   /**
+   * Get the HTTP Method
+   *
    * @return string
    */
   public function getMethod()
@@ -29,7 +30,20 @@ class PhrestRequest extends Request
     return parent::getMethod();
   }
 
+  /**
+   * todo
+   * @return bool
+   */
   public function isJSON()
+  {
+    return true;
+  }
+
+  /**
+   * todo
+   * @return bool
+   */
+  public function isCSV()
   {
     return true;
   }

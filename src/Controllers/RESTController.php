@@ -10,6 +10,7 @@ use PhrestAPI\Responses\CSVResponse;
 use PhrestAPI\Responses\JSONResponse;
 use PhrestAPI\Responses\Response;
 use PhrestAPI\Responses\ResponseMessage;
+use PhrestAPI\Request\PhrestRequest;
 
 /**
  * Base RESTful Controller.
@@ -24,6 +25,7 @@ use PhrestAPI\Responses\ResponseMessage;
  *     offset=20
  *
  * @property Response $response
+ * @property PhrestRequest $request
  */
 class RESTController extends BaseController
 {
