@@ -8,10 +8,10 @@ class Response
 {
 
   /** @var ResponseMeta */
-  private $meta;
+  protected $meta;
 
   /** @var ResponseMessage[] */
-  private $messages;
+  protected $messages;
 
   /** @var bool Is a head request */
   protected $isHEAD = false;
@@ -43,23 +43,27 @@ class Response
   }
 
   /**
-   * @param ResponseMeta $meta
+   * Set teh Response Count
+   *
+   * @param int $count
    *
    * @return $this
    */
-  public function setMeta(ResponseMeta $meta)
+  public function setCount($count)
   {
-    $this->meta = $meta;
+    $this->meta->count = (int)$count;
 
     return $this;
   }
 
   /**
-   * @param $count
+   * Get the Response Count
+   *
+   * @return int
    */
-  public function setMetaCount($count)
+  public function getCount()
   {
-    $this->meta->count = $count;
+    return (int)$this->meta->count;
   }
 
   /**

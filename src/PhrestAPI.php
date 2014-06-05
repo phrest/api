@@ -81,6 +81,12 @@ class PhrestAPI extends MicroMVC
 
         $controllerResponse = $this->getReturnedValue();
 
+        if(is_a($controllerResponse, 'PhrestAPI\Responses\ResponseArray'))
+        {
+          /** @var $controllerResponse \PhrestAPI\Responses\ResponseArray */
+          $controllerResponse->setCount($controllerResponse->getCount());
+        }
+
         //var_dump($controllerResponse);
 
 

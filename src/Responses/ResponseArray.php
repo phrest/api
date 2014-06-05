@@ -6,7 +6,7 @@ use Phalcon\DI;
 
 class ResponseArray extends Response
 {
-  public $responses = [];
+  private $responses = [];
 
   /**
    * Add a Response
@@ -22,10 +22,28 @@ class ResponseArray extends Response
   }
 
   /**
+   * Return the responses array as data
+   *
    * @return Response[]
    */
   public function getData()
   {
     return $this->responses;
+  }
+
+  /**
+   * Get the count of responses
+   * Count the responses if not already set
+   *
+   * @return int
+   */
+  public function getCount()
+  {
+    if(isset($this->meta->count))
+    {
+      return $this->meta->count;
+    }
+
+    return $this->meta->count = count($this->responses);
   }
 }

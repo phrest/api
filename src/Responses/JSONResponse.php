@@ -17,6 +17,7 @@ class JSONResponse extends HTTPResponse
   {
     parent::__construct();
 
+
     $this->data = $response->getData();
     $this->meta = $response->getMeta();
     $this->messages = $response->getMessages();
