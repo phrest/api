@@ -59,10 +59,16 @@ class PhrestAPI extends MicroMVC
     $this->notFound(
       function () use ($di)
       {
-        throw new \Exception(
-          sprintf('Route not found: "%s"', $_REQUEST['_url']),
-          404
+        /** @var PhrestRequest $request */
+        $request = $di->get('request');
+
+        $message = sprintf(
+          '404 Route not found: %s to %s',
+          strtoupper($request->getMethod()),
+          $_SERVER['REQUEST_URI']
         );
+
+        throw new \Exception($message);
       }
     );
 

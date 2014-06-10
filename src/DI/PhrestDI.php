@@ -32,6 +32,9 @@ class PhrestDI extends FactoryDefault
    */
   public function __construct()
   {
+    // Set up default services
+    parent::__construct();
+
     // Prepare the request object
     $this['request'] = function ()
     {
@@ -70,8 +73,5 @@ class PhrestDI extends FactoryDefault
     {
       return new Router;
     };
-
-
-    return parent::__construct();
   }
 }
