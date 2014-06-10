@@ -7,6 +7,7 @@ use League\OAuth2\Server\Grant\ClientCredentials;
 use Phalcon\Db\Adapter\Pdo\Mysql;
 use Phalcon\DI\FactoryDefault as PhalconDI;
 use Phalcon\DI;
+use Phalcon\DI\FactoryDefault;
 use Phalcon\Events\Manager as EventsManager;
 use Phalcon\Http\Request;
 use Phalcon\Mvc\Dispatcher as MVCDispatcher;
@@ -24,7 +25,7 @@ use PhrestAPI\Responses\Response;
 /**
  * PhrestDI
  */
-class PhrestDI extends DI
+class PhrestDI extends FactoryDefault
 {
   /**
    * Construct all of the dependencies for the API
@@ -70,7 +71,7 @@ class PhrestDI extends DI
       return new Router;
     };
 
-    // Set this as the Default DI
-    $this->setDefault($this);
+
+    return parent::__construct();
   }
 }

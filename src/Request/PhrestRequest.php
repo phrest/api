@@ -16,6 +16,40 @@ class PhrestRequest extends Request
   const METHOD_DELETE = 'DELETE';
 
   /**
+   * Get oAuth access token
+   * todo tidy up, standardize
+   *
+   * @return mixed|null|string
+   */
+  public function getToken()
+  {
+
+    if($this->has('token'))
+    {
+      return $this->get('token');
+    }
+
+    if($this->has('access_token'))
+    {
+      return $this->get('access_token');
+    }
+
+    if($this->has('accessToken'))
+    {
+      return $this->get('accessToken');
+    }
+
+    if(
+    $authorization = $this->getHeader('AUTHORIZATION')
+    )
+    {
+      return $authorization;
+    }
+
+    return null;
+  }
+
+  /**
    * Check if the request has a search
    * todo
    *

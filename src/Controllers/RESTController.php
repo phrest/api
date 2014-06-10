@@ -24,6 +24,7 @@ use PhrestAPI\Request\PhrestRequest;
  *   Partials:
  *     offset=20
  *
+ * @property \League\OAuth2\Server\Authorization $oauth2
  * @property Response $response
  * @property PhrestRequest $request
  */
