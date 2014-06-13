@@ -60,6 +60,8 @@ class PhrestRequest extends Request
     return false;
   }
 
+
+
   /**
    * Get the search term/query
    * todo
