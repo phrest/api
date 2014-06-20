@@ -113,6 +113,16 @@ class PhrestAPI extends MicroMVC
     );
   }
 
+  /**
+   * Get collections
+   *
+   * @throws \Exception
+   */
+  public function getCollections()
+  {
+    throw new \Exception("Please implement method getCollections()");
+  }
+
   private function getPhalconCollections()
   {
     $collections = $this->getCollections();
