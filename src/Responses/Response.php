@@ -3,6 +3,7 @@
 namespace PhrestAPI\Responses;
 
 use Phalcon\DI;
+use PhrestAPI\Enums\AbstractEnum;
 
 class Response
 {
@@ -24,7 +25,7 @@ class Response
   /**
    * Called by Phalcon, todo see if can get rid of it
    */
-  protected function isSent(){}
+  protected function isSent() { }
 
   /**
    * @return ResponseMessage[]
@@ -137,10 +138,27 @@ class Response
    */
   public function getData()
   {
-    // todo return json_decode(json_encode($this)); may be quicker
+    //var_dump((string)$this->subscriptionStatus); die;
+    //return json_decode(json_encode($this));
 
     // Return public properties
-    return call_user_func('get_object_vars', $this);
-  }
+    $dataVars = call_user_func('get_object_vars', $this);
 
+    if(count($dataVars) > 0)
+    {
+      array_walk_recursive(
+        $dataVars,
+        function (&$value)
+        {
+          if(is_a($value, '\PhrestAPI\Enums\AbstractEnum'))
+          {
+            /** @var $value AbstractEnum */
+            $value = $value->getValue();
+          }
+        }
+      );
+    }
+
+    var_dump($dataVars); die;
+  }
 }
