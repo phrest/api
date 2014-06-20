@@ -6,6 +6,7 @@ use Phalcon\DI;
 
 class ResponseArray extends Response
 {
+  /** @var Response[] */
   private $responses = [];
 
   /**
@@ -24,7 +25,9 @@ class ResponseArray extends Response
   /**
    * Add a Response
    *
+   * @param          $key
    * @param Response $response
+   *
    * @return $this
    */
   public function addResponseWithKey($key, Response $response)
@@ -35,13 +38,50 @@ class ResponseArray extends Response
   }
 
   /**
-   * Return the responses array as data
+   * Use getResponses
    *
    * @return Response[]
+   * @deprecated
    */
   public function getData()
   {
     return $this->responses;
+  }
+
+  /**
+   * Get the responses
+   *
+   * @return Response[]
+   */
+  public function getResponses()
+  {
+    return $this->responses;
+  }
+
+  /**
+   * Get a response by array key
+   *
+   * @param $key
+   *
+   * @return null|Response
+   */
+  public function getResponseByKey($key)
+  {
+    return isset($this->responses[$key]) ? $this->responses[$key] : null;
+  }
+
+  /**
+   * Set the responses array
+   *
+   * @param array $responses
+   *
+   * @return $this
+   */
+  public function setResponses(array $responses)
+  {
+    $this->responses = $responses;
+
+    return $this;
   }
 
   /**
