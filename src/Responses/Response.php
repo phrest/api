@@ -138,9 +138,6 @@ class Response
    */
   public function getData()
   {
-    //var_dump((string)$this->subscriptionStatus); die;
-    //return json_decode(json_encode($this));
-
     // Return public properties
     $dataVars = call_user_func('get_object_vars', $this);
 
@@ -159,6 +156,6 @@ class Response
       );
     }
 
-    var_dump($dataVars); die;
+    return $dataVars;
   }
 }
