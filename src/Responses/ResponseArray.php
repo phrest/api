@@ -22,6 +22,19 @@ class ResponseArray extends Response
   }
 
   /**
+   * Add a Response
+   *
+   * @param Response $response
+   * @return $this
+   */
+  public function addResponseWithKey($key, Response $response)
+  {
+    $this->responses[$key] = $response;
+
+    return $this;
+  }
+
+  /**
    * Return the responses array as data
    *
    * @return Response[]
