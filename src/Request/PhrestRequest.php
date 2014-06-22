@@ -50,21 +50,17 @@ class PhrestRequest extends Request
   }
 
   /**
-   * Check if the request has a search
-   * todo
+   * Check if the request has a search query
    *
    * @return bool
    */
   public function isSearch()
   {
-    return false;
+    return $this->hasQuery('q');
   }
 
-
-
   /**
-   * Get the search term/query
-   * todo
+   * Get the search query
    *
    * @throws \Exception
    * @return string
@@ -76,7 +72,7 @@ class PhrestRequest extends Request
       throw new \Exception('Cannot get search query for non search request');
     }
 
-    return 'foo';
+    return $this->getQuery('q');
   }
 
   /**
