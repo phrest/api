@@ -119,6 +119,7 @@ class RESTController extends BaseController
    * Parses out the search parameters from a request.
    * Unparsed, they will look like this:
    *    (name:Benjamin Framklin,location:Philadelphia)
+   * todo
    * Parsed:
    *     array('name'=>'Benjamin Franklin', 'location'=>'Philadelphia')
    * @param  string $unparsed Unparsed search string
@@ -126,6 +127,8 @@ class RESTController extends BaseController
    */
   protected function parseSearchParameters($unparsed)
   {
+    // todo
+    return [];
 
     // Strip parens that come with the request string
     $unparsed = trim($unparsed, '()');
