@@ -79,8 +79,6 @@ class Response
   {
     $this->meta->statusCode = $code;
     $this->meta->statusMessage = $message;
-
-    return parent::setStatusCode($code, $message);
   }
 
   /**
