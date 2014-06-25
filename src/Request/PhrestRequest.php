@@ -75,6 +75,59 @@ class PhrestRequest extends Request
     return $this->getQuery('q');
   }
 
+  public function hasLimit()
+  {
+    return $this->hasQuery('limit');
+  }
+
+  public function hasOffset()
+  {
+    return $this->hasQuery('offset');
+  }
+
+  public function getLimit()
+  {
+    return (int)$this->getQuery('limit');
+  }
+
+  public function getOffset()
+  {
+    return (int)$this->getQuery('offset');
+  }
+
+  public function getSortOrder()
+  {
+    $possible = [
+      'ASC',
+      'DESC'
+    ];
+
+    $sortOrder = strtoupper($this->getQuery('sortOrder'));
+
+    if(!in_array($sortOrder, $possible))
+    {
+      throw new \Exception("Invalid sort order " . $sortOrder);
+    }
+
+    return $sortOrder;
+  }
+
+  public function hasSortOrder()
+  {
+    return $this->has('sortOrder');
+  }
+
+  public function getSortBy()
+  {
+    return $this->getQuery('sortBy');
+  }
+
+  public function hasSortBy()
+  {
+    return $this->hasQuery('sortBy');
+  }
+
+
   /**
    * Check if the request is for pagination
    * todo

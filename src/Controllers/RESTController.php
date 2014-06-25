@@ -11,6 +11,8 @@ use PhrestAPI\Responses\JSONResponse;
 use PhrestAPI\Responses\Response;
 use PhrestAPI\Responses\ResponseMessage;
 use PhrestAPI\Request\PhrestRequest;
+use WZCore\Filter\Filter;
+use WZCore\Validate\Validate;
 
 /**
  * Base RESTful Controller.
@@ -403,5 +405,58 @@ class RESTController extends BaseController
     }
 
     return $this->response;
+  }
+
+  /**
+   * Get a query based on the current request
+   * Searching is custom logic
+   *
+   * @param $modelClassName
+   *
+   * @return Model\Query\BuilderInterface
+   */
+  protected function getQueryBuilder($modelClassName)
+  {
+    $query = $this->modelsManager->createBuilder()->from($modelClassName);
+
+    // Prepare for where
+    $query->where('1 = 1');
+
+    // Get only certain IDs
+    if($this->request->hasQuery('ids'))
+    {
+      // Filter input
+      $ids = Filter::arrayOfInts($this->request->getQuery('ids'));
+
+      // Validate input
+      Validate::arrayHasValues($ids);
+
+      // Get where
+      $query->inWhere('id', $ids);
+    }
+
+    // Limit the query
+    if($this->request->hasLimit())
+    {
+      $query->limit($this->request->getLimit());
+    }
+
+    // Offset the query
+    if($this->request->hasOffset())
+    {
+      $query->offset($this->request->getOffset());
+    }
+
+    // Sort the query
+    if($this->request->hasSortBy())
+    {
+      $query->orderBy(
+        $this->request->getSortBy() . ' ' . $this->request->getSortOrder()
+      );
+    }
+
+
+
+    return $query;
   }
 }
