@@ -202,9 +202,14 @@ class PhrestAPI extends MicroMVC
 
   /**
    * If the application throws an HTTPException, respond correctly (json etc.)
+   * todo this was not working as the try catch blocks in controllers
+   * was catching the exception before it would be handled, need
+   * to come back to this
    */
   public function setExceptionHandler(DI $di)
   {
+    return $this;
+
     set_exception_handler(
       function ($exception) use ($di)
       {
@@ -219,7 +224,6 @@ class PhrestAPI extends MicroMVC
           //Set the content of the response
           $response->setContent($exception->getMessage());
 
-          //Send response to the client
           return $response->send();
         }
 
