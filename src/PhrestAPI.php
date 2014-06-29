@@ -13,6 +13,7 @@ use Phalcon\DI\FactoryDefault as DefaultDI;
 use Phalcon\Exception;
 use Phalcon\Mvc\Micro as MicroMVC;
 use Phalcon\Http\Response;
+use PhrestSDK\PhrestSDK;
 
 /**
  * Phalcon API Application
@@ -59,16 +60,29 @@ class PhrestAPI extends MicroMVC
     $this->notFound(
       function () use ($di)
       {
-        /** @var PhrestRequest $request */
-        $request = $di->get('request');
+        // Method
+        if(PhrestSDK::$method && PhrestSDK::$uri)
+        {
+          // Set exception message
+          $message = sprintf(
+            '404: Route not found: %s (via SDK) to %s',
+            PhrestSDK::$method,
+            PhrestSDK::$uri
+          );
+        }
+        else
+        {
+          // Set exception message
+          /** @var PhrestRequest $request */
+          $request = $di->get('request');
+          $message = sprintf(
+            '404: Route not found: %s to %s',
+            $request->getMethod(),
+            $request->getURI()
+          );
+        }
 
-        $message = sprintf(
-          '404 Route not found: %s to %s',
-          strtoupper($request->getMethod()),
-          $_SERVER['REQUEST_URI']
-        );
-
-        throw new \Exception($message);
+        throw new \Exception($message, 404);
       }
     );
 

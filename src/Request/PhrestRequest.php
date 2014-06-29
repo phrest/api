@@ -15,6 +15,8 @@ class PhrestRequest extends Request
   const METHOD_PATCH = 'PATCH';
   const METHOD_DELETE = 'DELETE';
 
+
+
   /**
    * Get oAuth access token
    * todo tidy up, standardize
@@ -229,7 +231,8 @@ class PhrestRequest extends Request
       return $_GET['method'];
     }
 
-    return parent::getMethod();
+    $method = parent::getMethod();
+    return $method;
   }
 
   /**
