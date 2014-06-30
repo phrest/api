@@ -6,6 +6,8 @@ use Phalcon\Exception;
 use Phalcon\Mvc\Model;
 use PhrestAPI\Exceptions\HTTPException;
 use Phalcon\Mvc\Model\ResultsetInterface;
+use PhrestAPI\Model\Query\QueryHelper;
+use PhrestAPI\Model\Query\QueryOptions;
 use PhrestAPI\Responses\CSVResponse;
 use PhrestAPI\Responses\JSONResponse;
 use PhrestAPI\Responses\Response;
@@ -417,10 +419,20 @@ class RESTController extends BaseController
    */
   protected function getQueryBuilder($modelClassName)
   {
-    $query = $this->modelsManager->createBuilder()->from($modelClassName);
+    $options = $this->createQueryOptionsFromRequest();
 
-    // Prepare for where
-    $query->where('1 = 1');
+    $query = QueryHelper::prepareQuery($modelClassName, $options);
+
+    return $query;
+  }
+
+  /**
+   * Createas a QueryOptions object from the request
+   * @return QueryOptions
+   */
+  protected function createQueryOptionsFromRequest(){
+
+    $options = QueryOptions::create();
 
     // Get only certain IDs
     if($this->request->hasQuery('ids'))
@@ -432,31 +444,27 @@ class RESTController extends BaseController
       Validate::arrayHasValues($ids);
 
       // Get where
-      $query->inWhere('id', $ids);
+      $options->filterByIds($ids);
     }
 
     // Limit the query
     if($this->request->hasLimit())
     {
-      $query->limit($this->request->getLimit());
+      $options->setLimit($this->request->getLimit());
     }
 
     // Offset the query
     if($this->request->hasOffset())
     {
-      $query->offset($this->request->getOffset());
+      $options->offset = $this->request->getOffset();
     }
 
     // Sort the query
     if($this->request->hasSortBy())
     {
-      $query->orderBy(
-        $this->request->getSortBy() . ' ' . $this->request->getSortOrder()
-      );
+      $options->sortBy = $this->request->getSortBy();
+      $options->sortOrder = $this->request->getSortOrder();
     }
-
-
-
-    return $query;
+    return $options;
   }
 }
