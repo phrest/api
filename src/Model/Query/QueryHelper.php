@@ -45,20 +45,15 @@ class QueryHelper {
       $query->orderBy($str);
     }
 
-    if($options->isDeleted !== null){
+    if($options->isDeleted !== null)
+    {
       if($options->isDeleted)
       {
-        $query->andWhere(
-          'deleted = :deleted:',
-          ['deleted' => 'NULL']
-        );
+        $query->andWhere('deleted IS NULL');
       }
       else
       {
-        $query->andWhere(
-          'deleted != :deleted:',
-          ['deleted' => 'NULL']
-        );
+        $query->andWhere('deleted IS NOT NULL');
       }
     }
 
