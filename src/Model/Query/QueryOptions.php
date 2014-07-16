@@ -7,6 +7,7 @@ class QueryOptions {
   public $ids;
   public $sortBy;
   public $sortOrder;
+  public $isDeleted;
 
   private function __construct()
   {
@@ -66,6 +67,16 @@ class QueryOptions {
    */
   public function sortOrder($sortOrder){
     $this->sortOrder = $sortOrder;
+    return $this;
+  }
+
+  /**
+   * @param bool $value
+   *
+   * @return $this
+   */
+  public function isDeleted($value){
+    $this->isDeleted = $value;
     return $this;
   }
 

@@ -5,11 +5,13 @@
 namespace PhrestAPI\Model\Query;
 
 use Phalcon\DI;
+use Phalcon\Mvc\Model\Query\Builder;
 
 class QueryHelper {
 
   public static function prepareQuery($modelClassName, QueryOptions $options){
     $modelsManager = DI::getDefault()->get('modelsManager');
+    /** @var Builder $query */
     $query = $modelsManager->createBuilder()->from($modelClassName);
 
     // Prepare for where
@@ -41,6 +43,23 @@ class QueryHelper {
         $str .= ' ' . $options->sortOrder;
       }
       $query->orderBy($str);
+    }
+
+    if($options->isDeleted !== null){
+      if($options->isDeleted)
+      {
+        $query->andWhere(
+          'deleted != :deleted:',
+          ['deleted' => 0]
+        );
+      }
+      else
+      {
+        $query->andWhere(
+          'deleted = :deleted:',
+          ['deleted' => 'null']
+        );
+      }
     }
 
     return $query;
