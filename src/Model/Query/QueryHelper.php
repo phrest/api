@@ -49,15 +49,15 @@ class QueryHelper {
       if($options->isDeleted)
       {
         $query->andWhere(
-          'deleted != :deleted:',
-          ['deleted' => 0]
+          'deleted = :deleted:',
+          ['deleted' => 'NULL']
         );
       }
       else
       {
         $query->andWhere(
-          'deleted = :deleted:',
-          ['deleted' => 'null']
+          'deleted != :deleted:',
+          ['deleted' => 'NULL']
         );
       }
     }
