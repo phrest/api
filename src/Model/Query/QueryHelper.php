@@ -49,11 +49,11 @@ class QueryHelper {
     {
       if($options->isDeleted)
       {
-        $query->andWhere('deleted IS NULL');
+        $query->andWhere('deleted IS NOT NULL');
       }
       else
       {
-        $query->andWhere('deleted IS NOT NULL');
+        $query->andWhere('deleted IS NULL');
       }
     }
 
