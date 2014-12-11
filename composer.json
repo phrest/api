@@ -17,6 +17,7 @@
     }
   },
   "require":     {
+    "marc-mabe/php-enum": "v1.2.0",
     "digitronac/phalcon-ide-stubs": "1.3.*",
     "zendframework/zend-code": "2.3.*@dev"
   }

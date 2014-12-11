@@ -6,10 +6,15 @@ use Phalcon\Exception;
 use Phalcon\Mvc\Model;
 use PhrestAPI\Exceptions\HTTPException;
 use Phalcon\Mvc\Model\ResultsetInterface;
+use PhrestAPI\Model\Query\QueryHelper;
+use PhrestAPI\Model\Query\QueryOptions;
 use PhrestAPI\Responses\CSVResponse;
 use PhrestAPI\Responses\JSONResponse;
 use PhrestAPI\Responses\Response;
 use PhrestAPI\Responses\ResponseMessage;
+use PhrestAPI\Request\PhrestRequest;
+use WZCore\Filter\Filter;
+use WZCore\Validate\Validate;
 
 /**
  * Base RESTful Controller.
@@ -23,7 +28,9 @@ use PhrestAPI\Responses\ResponseMessage;
  *   Partials:
  *     offset=20
  *
+ * @property \League\OAuth2\Server\Authorization $oauth2
  * @property Response $response
+ * @property PhrestRequest $request
  */
 class RESTController extends BaseController
 {
@@ -116,6 +123,7 @@ class RESTController extends BaseController
    * Parses out the search parameters from a request.
    * Unparsed, they will look like this:
    *    (name:Benjamin Framklin,location:Philadelphia)
+   * todo
    * Parsed:
    *     array('name'=>'Benjamin Franklin', 'location'=>'Philadelphia')
    * @param  string $unparsed Unparsed search string
@@ -123,6 +131,8 @@ class RESTController extends BaseController
    */
   protected function parseSearchParameters($unparsed)
   {
+    // todo
+    return [];
 
     // Strip parens that come with the request string
     $unparsed = trim($unparsed, '()');
@@ -397,5 +407,64 @@ class RESTController extends BaseController
     }
 
     return $this->response;
+  }
+
+  /**
+   * Get a query based on the current request
+   * Searching is custom logic
+   *
+   * @param $modelClassName
+   *
+   * @return Model\Query\BuilderInterface
+   */
+  protected function getQueryBuilder($modelClassName)
+  {
+    $options = $this->createQueryOptionsFromRequest();
+
+    $query = QueryHelper::prepareQuery($modelClassName, $options);
+
+    return $query;
+  }
+
+  /**
+   * Createas a QueryOptions object from the request
+   * @return QueryOptions
+   */
+  protected function createQueryOptionsFromRequest(){
+
+    $options = QueryOptions::create();
+
+    // Get only certain IDs
+    if($this->request->hasQuery('ids'))
+    {
+      // Filter input
+      $ids = Filter::arrayOfInts($this->request->getQuery('ids'));
+
+      // Validate input
+      Validate::arrayHasValues($ids);
+
+      // Get where
+      $options->filterByIds($ids);
+    }
+
+    // Limit the query
+    if($this->request->hasLimit())
+    {
+      $options->setLimit($this->request->getLimit());
+    }
+
+    // Offset the query
+    if($this->request->hasOffset())
+    {
+      $options->offset = $this->request->getOffset();
+    }
+
+    // Sort the query
+    if($this->request->hasSortBy())
+    {
+      $options->sortBy = $this->request->getSortBy();
+      $options->sortOrder = $this->request->getSortOrder();
+    }
+    return $options;
   }
 }

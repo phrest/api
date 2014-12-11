@@ -3,15 +3,16 @@
 namespace PhrestAPI\Responses;
 
 use Phalcon\DI;
+use PhrestAPI\Enums\AbstractEnum;
 
 class Response
 {
 
   /** @var ResponseMeta */
-  private $meta;
+  protected $meta;
 
   /** @var ResponseMessage[] */
-  private $messages;
+  protected $messages;
 
   /** @var bool Is a head request */
   protected $isHEAD = false;
@@ -24,7 +25,7 @@ class Response
   /**
    * Called by Phalcon, todo see if can get rid of it
    */
-  protected function isSent(){}
+  protected function isSent() { }
 
   /**
    * @return ResponseMessage[]
@@ -43,23 +44,27 @@ class Response
   }
 
   /**
-   * @param ResponseMeta $meta
+   * Set teh Response Count
+   *
+   * @param int $count
    *
    * @return $this
    */
-  public function setMeta(ResponseMeta $meta)
+  public function setCount($count)
   {
-    $this->meta = $meta;
+    $this->meta->count = (int)$count;
 
     return $this;
   }
 
   /**
-   * @param $count
+   * Get the Response Count
+   *
+   * @return int
    */
-  public function setMetaCount($count)
+  public function getCount()
   {
-    $this->meta->count = $count;
+    return (int)$this->meta->count;
   }
 
   /**
@@ -74,8 +79,6 @@ class Response
   {
     $this->meta->statusCode = $code;
     $this->meta->statusMessage = $message;
-
-    return parent::setStatusCode($code, $message);
   }
 
   /**
@@ -133,10 +136,24 @@ class Response
    */
   public function getData()
   {
-    // todo return json_decode(json_encode($this)); may be quicker
-
     // Return public properties
-    return call_user_func('get_object_vars', $this);
-  }
+    $dataVars = call_user_func('get_object_vars', $this);
 
+    if(count($dataVars) > 0)
+    {
+      array_walk_recursive(
+        $dataVars,
+        function (&$value)
+        {
+          if(is_a($value, '\PhrestAPI\Enums\AbstractEnum'))
+          {
+            /** @var $value AbstractEnum */
+            $value = $value->getValue();
+          }
+        }
+      );
+    }
+
+    return $dataVars;
+  }
 }

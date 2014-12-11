@@ -13,6 +13,7 @@ use Phalcon\DI\FactoryDefault as DefaultDI;
 use Phalcon\Exception;
 use Phalcon\Mvc\Micro as MicroMVC;
 use Phalcon\Http\Response;
+use PhrestSDK\PhrestSDK;
 
 /**
  * Phalcon API Application
@@ -59,7 +60,29 @@ class PhrestAPI extends MicroMVC
     $this->notFound(
       function () use ($di)
       {
-        throw new \Exception('Route not matched');
+        // Method
+        if(PhrestSDK::$method && PhrestSDK::$uri)
+        {
+          // Set exception message
+          $message = sprintf(
+            '404: Route not found: %s (via SDK) to %s',
+            PhrestSDK::$method,
+            PhrestSDK::$uri
+          );
+        }
+        else
+        {
+          // Set exception message
+          /** @var PhrestRequest $request */
+          $request = $di->get('request');
+          $message = sprintf(
+            '404: Route not found: %s to %s',
+            $request->getMethod(),
+            $request->getURI()
+          );
+        }
+
+        throw new \Exception($message, 404);
       }
     );
 
@@ -81,8 +104,13 @@ class PhrestAPI extends MicroMVC
 
         $controllerResponse = $this->getReturnedValue();
 
-        //var_dump($controllerResponse);
+        if(is_a($controllerResponse, 'PhrestAPI\Responses\ResponseArray'))
+        {
+          /** @var $controllerResponse \PhrestAPI\Responses\ResponseArray */
+          $controllerResponse->setCount($controllerResponse->getCount());
+        }
 
+        //var_dump($controllerResponse);
 
         /** @var PhrestRequest $response */
         $request = $di->get('request');
@@ -97,6 +125,16 @@ class PhrestAPI extends MicroMVC
         $response->send();
       }
     );
+  }
+
+  /**
+   * Get collections
+   *
+   * @throws \Exception
+   */
+  public function getCollections()
+  {
+    throw new \Exception("Please implement method getCollections()");
   }
 
   private function getPhalconCollections()
@@ -178,9 +216,14 @@ class PhrestAPI extends MicroMVC
 
   /**
    * If the application throws an HTTPException, respond correctly (json etc.)
+   * todo this was not working as the try catch blocks in controllers
+   * was catching the exception before it would be handled, need
+   * to come back to this
    */
   public function setExceptionHandler(DI $di)
   {
+    return $this;
+
     set_exception_handler(
       function ($exception) use ($di)
       {
@@ -195,7 +238,6 @@ class PhrestAPI extends MicroMVC
           //Set the content of the response
           $response->setContent($exception->getMessage());
 
-          //Send response to the client
           return $response->send();
         }
 
