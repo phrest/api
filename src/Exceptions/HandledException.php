@@ -12,6 +12,16 @@ namespace PhrestAPI\Exceptions;
 class HandledException extends \Exception
 {
   protected $code = 500;
+  public $logException = true;
+  public $displayExceptionTrace = true;
+
+  public function __construct()
+  {
+    if(!$this->displayExceptionTrace)
+    {
+      error_reporting(0);
+    }
+  }
 
   /**
    * todo make use of this
