@@ -3,6 +3,8 @@
 
 namespace PhrestAPI\Exceptions;
 
+use Exception;
+
 /**
  * HandledException
  *
@@ -15,12 +17,21 @@ class HandledException extends \Exception
   public $logException = true;
   public $displayExceptionTrace = true;
 
-  public function __construct()
+  public function __construct(
+    $message = "",
+    $code = 0,
+    Exception $previous = null
+  )
   {
-    if(!$this->displayExceptionTrace)
+    if (!$this->displayExceptionTrace)
     {
       error_reporting(0);
     }
+    parent::__construct(
+      $message,
+      $code,
+      $previous
+    );
   }
 
   /**
