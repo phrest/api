@@ -27,6 +27,11 @@ class HandledException extends \Exception
     {
       error_reporting(0);
     }
+
+    if(isset($this->message) && $message == '')
+    {
+      $message = $this->message;
+    }
     parent::__construct(
       $message,
       $code,
