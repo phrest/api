@@ -1,5 +1,5 @@
 <?php
-namespace PhrestAPI\Controllers;
+namespace Phrest\API\Controllers;
 
 use WZSDK\SDK;
 

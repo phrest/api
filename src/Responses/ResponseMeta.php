@@ -1,7 +1,7 @@
 <?php
 
 
-namespace PhrestAPI\Responses;
+namespace Phrest\API\Responses;
 
 
 class ResponseMeta

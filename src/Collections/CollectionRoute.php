@@ -1,9 +1,9 @@
 <?php
 
 
-namespace PhrestAPI\Collections;
+namespace Phrest\API\Collections;
 
-use PhrestAPI\Request\PhrestRequest;
+use Phrest\API\Request\PhrestRequest;
 
 class CollectionRoute
 {

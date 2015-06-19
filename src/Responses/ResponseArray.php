@@ -1,6 +1,6 @@
 <?php
 
-namespace PhrestAPI\Responses;
+namespace Phrest\API\Responses;
 
 use Phalcon\DI;
 

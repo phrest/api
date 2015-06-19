@@ -2,7 +2,7 @@
 
 
 
-namespace PhrestAPI\Model\Query;
+namespace Phrest\API\Model\Query;
 
 use Phalcon\DI;
 use Phalcon\Mvc\Model\Query\Builder;

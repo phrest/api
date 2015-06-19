@@ -1,6 +1,6 @@
 <?php
 
-namespace PhrestAPI\Exceptions;
+namespace Phrest\API\Exceptions;
 
 /**
  * InvalidQueryException

@@ -1,5 +1,5 @@
 <?php
-namespace PhrestAPI\Model\Query;
+namespace Phrest\API\Model\Query;
 
 class QueryOptions {
   public $limit;

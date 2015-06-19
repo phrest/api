@@ -1,7 +1,7 @@
 <?php
 
 
-namespace PhrestAPI\Exceptions;
+namespace Phrest\API\Exceptions;
 
 use Exception;
 

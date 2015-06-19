@@ -1,6 +1,6 @@
 <?php
 
-namespace PhrestAPI\DI;
+namespace Phrest\API\DI;
 
 use League\OAuth2\Server\Authorization;
 use League\OAuth2\Server\Grant\ClientCredentials;
@@ -14,13 +14,13 @@ use Phalcon\Mvc\Dispatcher as MVCDispatcher;
 use Phalcon\Mvc\Dispatcher;
 use Phalcon\Mvc\Router;
 use Phalcon\Registry;
-use PhrestAPI\Oauth2\Server\Storage\Pdo\Mysql\Client;
-use PhrestAPI\Oauth2\Server\Storage\Pdo\Mysql\Scope;
-use PhrestAPI\Oauth2\Server\Storage\Pdo\Mysql\Session;
-use PhrestAPI\Request\PhrestRequest;
-use PhrestAPI\Responses\CSVResponse;
-use PhrestAPI\Responses\JSONResponse;
-use PhrestAPI\Responses\Response;
+use Phrest\API\Oauth2\Server\Storage\Pdo\Mysql\Client;
+use Phrest\API\Oauth2\Server\Storage\Pdo\Mysql\Scope;
+use Phrest\API\Oauth2\Server\Storage\Pdo\Mysql\Session;
+use Phrest\API\Request\PhrestRequest;
+use Phrest\API\Responses\CSVResponse;
+use Phrest\API\Responses\JSONResponse;
+use Phrest\API\Responses\Response;
 
 /**
  * PhrestDI
@@ -59,7 +59,7 @@ class PhrestDI extends FactoryDefault
 
       # add these 2 lines code if you want to use my own Request otherwise comment it
       // todo required?
-      //$request = new \PhrestAPI\Oauth2\Server\Request();
+      //$request = new \Phrest\API\Oauth2\Server\Request();
       //$server->setRequest($request);
 
       $server->setAccessTokenTTL(86400);

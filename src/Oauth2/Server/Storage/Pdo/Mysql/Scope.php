@@ -1,5 +1,5 @@
 <?php
-namespace PhrestAPI\Oauth2\Server\Storage\Pdo\Mysql;
+namespace Phrest\API\Oauth2\Server\Storage\Pdo\Mysql;
 
 use League\OAuth2\Server\Storage\ScopeInterface;
 use Phalcon\Db;

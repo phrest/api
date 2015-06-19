@@ -1,14 +1,14 @@
 <?php
 
-namespace PhrestAPI\Structure;
+namespace Phrest\API\Structure;
 
-use PhrestAPI\PhrestAPI;
-use PhrestAPI\Structure\Collection;
-use PhrestAPI\Structure\Collection\Call;
-use PhrestAPI\Structure\Collection\Call\Method;
-use PhrestAPI\Collections\Collection as PhCollection;
-use PhrestAPI\Collections\CollectionRoute;
-use PhrestAPI\Responses\Response;
+use Phrest\API\PhrestAPI;
+use Phrest\API\Structure\Collection;
+use Phrest\API\Structure\Collection\Call;
+use Phrest\API\Structure\Collection\Call\Method;
+use Phrest\API\Collections\Collection as PhCollection;
+use Phrest\API\Collections\CollectionRoute;
+use Phrest\API\Responses\Response;
 use Zend\Code\Generator\DocBlock\Tag;
 use Phalcon\Annotations\Adapter\Memory as AnnotationReader;
 

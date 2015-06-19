@@ -1,7 +1,7 @@
 <?php
 
 
-namespace PhrestAPI\Structure\Collection\Call;
+namespace Phrest\API\Structure\Collection\Call;
 
 class Method
 {

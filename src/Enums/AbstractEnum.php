@@ -1,7 +1,7 @@
 <?php
 
 
-namespace PhrestAPI\Enums;
+namespace Phrest\API\Enums;
 
 use MabeEnum\Enum;
 

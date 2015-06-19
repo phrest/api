@@ -1,7 +1,7 @@
 <?php
 
 
-namespace PhrestAPI\Collections;
+namespace Phrest\API\Collections;
 
 class Collection
 {

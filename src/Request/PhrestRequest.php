@@ -1,7 +1,7 @@
 <?php
 
 
-namespace PhrestAPI\Request;
+namespace Phrest\API\Request;
 
 use Phalcon\Http\Request;
 

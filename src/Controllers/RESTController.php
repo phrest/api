@@ -1,18 +1,18 @@
 <?php
-namespace PhrestAPI\Controllers;
+namespace Phrest\API\Controllers;
 
 use Phalcon\DI;
 use Phalcon\Exception;
 use Phalcon\Mvc\Model;
-use PhrestAPI\Exceptions\HTTPException;
+use Phrest\API\Exceptions\HTTPException;
 use Phalcon\Mvc\Model\ResultsetInterface;
-use PhrestAPI\Model\Query\QueryHelper;
-use PhrestAPI\Model\Query\QueryOptions;
-use PhrestAPI\Responses\CSVResponse;
-use PhrestAPI\Responses\JSONResponse;
-use PhrestAPI\Responses\Response;
-use PhrestAPI\Responses\ResponseMessage;
-use PhrestAPI\Request\PhrestRequest;
+use Phrest\API\Model\Query\QueryHelper;
+use Phrest\API\Model\Query\QueryOptions;
+use Phrest\API\Responses\CSVResponse;
+use Phrest\API\Responses\JSONResponse;
+use Phrest\API\Responses\Response;
+use Phrest\API\Responses\ResponseMessage;
+use Phrest\API\Request\PhrestRequest;
 use WZCore\Filter\Filter;
 use WZCore\Validate\Validate;
 
@@ -107,8 +107,8 @@ class RESTController extends BaseController
    *
    * @param boolean $parseQueryString true Can be set to false if a controller needs to be called
    *        from a different controller, bypassing the $allowedFields parse
-   * @throws \PhrestAPI\Exceptions\HTTPException
-   * @return \PhrestAPI\Controllers\RESTController
+   * @throws \Phrest\API\Exceptions\HTTPException
+   * @return \Phrest\API\Controllers\RESTController
    */
   public function __construct($parseQueryString = true)
   {
@@ -212,7 +212,7 @@ class RESTController extends BaseController
    * Sets Controller fields for these variables.
    *
    * @param  array $allowedFields Allowed fields array for search and partials
-   * @throws \PhrestAPI\Exceptions\HTTPException
+   * @throws \Phrest\API\Exceptions\HTTPException
    * @return boolean              Always true if no exception is thrown
    */
   protected function parseRequest($allowedFields)

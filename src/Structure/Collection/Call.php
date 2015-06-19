@@ -1,7 +1,7 @@
 <?php
 
 
-namespace PhrestAPI\Structure\Collection;
+namespace Phrest\API\Structure\Collection;
 
 class Call
 {

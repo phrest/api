@@ -1,19 +1,19 @@
 <?php
-namespace PhrestAPI;
+namespace Phrest\API;
 
 use Phalcon\DI;
-use PhrestAPI\Collections\Collection;
+use Phrest\API\Collections\Collection;
 use Phalcon\Mvc\Micro\Collection as PhalconCollection;
-use PhrestAPI\Collections\CollectionRoute;
-use PhrestAPI\DI\PhrestDI;
-use PhrestAPI\Request\PhrestRequest;
-use PhrestAPI\Responses\CSVResponse;
-use PhrestAPI\Responses\JSONResponse;
+use Phrest\API\Collections\CollectionRoute;
+use Phrest\API\DI\PhrestDI;
+use Phrest\API\Request\PhrestRequest;
+use Phrest\API\Responses\CSVResponse;
+use Phrest\API\Responses\JSONResponse;
 use Phalcon\DI\FactoryDefault as DefaultDI;
 use Phalcon\Exception;
 use Phalcon\Mvc\Micro as MicroMVC;
 use Phalcon\Http\Response;
-use PhrestSDK\PhrestSDK;
+use Phrest\SDK\PhrestSDK;
 
 /**
  * Phalcon API Application
@@ -104,9 +104,9 @@ class PhrestAPI extends MicroMVC
 
         $controllerResponse = $this->getReturnedValue();
 
-        if(is_a($controllerResponse, 'PhrestAPI\Responses\ResponseArray'))
+        if(is_a($controllerResponse, 'Phrest\API\Responses\ResponseArray'))
         {
-          /** @var $controllerResponse \PhrestAPI\Responses\ResponseArray */
+          /** @var $controllerResponse \Phrest\API\Responses\ResponseArray */
           $controllerResponse->setCount($controllerResponse->getCount());
         }
 
@@ -230,7 +230,7 @@ class PhrestAPI extends MicroMVC
         /** @var $exception Exception */
 
         // Handled exceptions
-        if(is_a($exception, 'PhrestAPI\\Exceptions\\HandledException'))
+        if(is_a($exception, 'Phrest\API\\Exceptions\\HandledException'))
         {
           /** @var Response $response */
           $response = $di->get('response');

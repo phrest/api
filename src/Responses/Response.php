@@ -1,9 +1,9 @@
 <?php
 
-namespace PhrestAPI\Responses;
+namespace Phrest\API\Responses;
 
 use Phalcon\DI;
-use PhrestAPI\Enums\AbstractEnum;
+use Phrest\API\Enums\AbstractEnum;
 
 class Response
 {
@@ -145,7 +145,7 @@ class Response
         $dataVars,
         function (&$value)
         {
-          if(is_a($value, '\PhrestAPI\Enums\AbstractEnum'))
+          if(is_a($value, '\Phrest\API\Enums\AbstractEnum'))
           {
             /** @var $value AbstractEnum */
             $value = $value->getValue();

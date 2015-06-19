@@ -1,8 +1,8 @@
 <?php
-namespace PhrestAPI\Responses;
+namespace Phrest\API\Responses;
 
 use Phalcon\Http\Response as HTTPResponse;
-use PhrestAPI\Request\PhrestRequest;
+use Phrest\API\Request\PhrestRequest;
 
 class JSONResponse extends HTTPResponse
 {
