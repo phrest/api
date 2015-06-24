@@ -32,46 +32,28 @@ class PhrestDI extends FactoryDefault
    */
   public function __construct()
   {
-    // Set up default services
     parent::__construct();
 
-    // Prepare the request object
-    $this['request'] = function ()
-    {
-      return new PhrestRequest();
-    };
+    $this->setShared('request',
+      function ()
+      {
+        return new PhrestRequest();
+      }
+    );
 
-    // Set up oAuth2 service
-    $this['oauth2'] = function ()
-    {
-      $config = $this->get('config');
-      $oauth2DB = new Mysql($config->oauth2DB->toArray());
+    $this->setShared('oauth2',
+      function ()
+      {
+        return false;
+      }
+    );
 
-      // Create oAuth2 server
-      $server = new Authorization(
-        new Client($oauth2DB),
-        new Session($oauth2DB),
-        new Scope($oauth2DB)
-      );
 
-      # Not required as it called directly from original code
-      # $request = new \League\OAuth2\Server\Util\Request();
-
-      # add these 2 lines code if you want to use my own Request otherwise comment it
-      // todo required?
-      //$request = new \Phrest\API\Oauth2\Server\Request();
-      //$server->setRequest($request);
-
-      $server->setAccessTokenTTL(86400);
-      $server->addGrantType(new ClientCredentials());
-
-      return $server;
-    };
-
-    // Default router
-    $this['router'] = function ()
-    {
-      return new Router;
-    };
+    $this->setShared('router',
+      function ()
+      {
+        return new Router;
+      }
+    );
   }
 }
