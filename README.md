@@ -15,7 +15,7 @@ Currently in development, this package will provide the following:
 
 * Self documenting based on PHP DocBlocks
 * Allows both HTTP and Internal API via PhREST SDK: http://github.com/phrest/sdk
-* SDK Generator, will analyse the available calls and generate a basic SDK for request methods and response stubs
+* SDK Generator, will analyse the available calls and create a basic SDK for request methods and response stubs
 
 Installation
 ============

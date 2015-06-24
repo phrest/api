@@ -23,31 +23,25 @@ class PhrestAPI extends MicroMVC
   /** @var  string */
   protected $srcDir;
 
-  /** @var  string */
-  private $collectionDir;
-
   /** @var bool */
   public $isInternalRequest = false;
 
   public function __construct(PhrestDI $di, $srcDir = null)
   {
     // Set the applications src directory
-    if(!$srcDir)
+    if (!$srcDir)
     {
       // Assume the src directory based on standard structure
       $srcDir = dirname(dirname(dirname(dirname(__DIR__)))) . '/src';
     }
     $this->srcDir = $srcDir;
 
-    // Set the assumed collections dir
-    $this->collectionDir = $this->srcDir . '/Collections/';
-
     // Collections are how we handler our routes
     $di->set(
       'collections',
       function ()
       {
-        return $this->getPhalconCollections();
+        return $this->getCollections();
       }
     );
 
@@ -61,7 +55,7 @@ class PhrestAPI extends MicroMVC
       function () use ($di)
       {
         // Method
-        if(PhrestSDK::$method && PhrestSDK::$uri)
+        if (PhrestSDK::$method && PhrestSDK::$uri)
         {
           // Set exception message
           $message = sprintf(
@@ -87,7 +81,7 @@ class PhrestAPI extends MicroMVC
     );
 
     // Mount all of the collections, which makes the routes active.
-    foreach($di->get('collections') as $collection)
+    foreach ($di->get('collections') as $collection)
     {
       $this->mount($collection);
     }
@@ -97,14 +91,14 @@ class PhrestAPI extends MicroMVC
       function () use ($di)
       {
         // Internal request will return the response
-        if($this->isInternalRequest)
+        if ($this->isInternalRequest)
         {
           return;
         }
 
         $controllerResponse = $this->getReturnedValue();
 
-        if(is_a($controllerResponse, 'Phrest\API\Responses\ResponseArray'))
+        if (is_a($controllerResponse, 'Phrest\API\Responses\ResponseArray'))
         {
           /** @var $controllerResponse \Phrest\API\Responses\ResponseArray */
           $controllerResponse->setCount($controllerResponse->getCount());
@@ -115,7 +109,7 @@ class PhrestAPI extends MicroMVC
         /** @var PhrestRequest $response */
         $request = $di->get('request');
 
-        if($request->isJSON())
+        if ($request->isJSON())
         {
           $di->set('response', new JSONResponse($controllerResponse));
         }
@@ -130,88 +124,53 @@ class PhrestAPI extends MicroMVC
   /**
    * Get collections
    *
-   * @throws \Exception
+   * @return array
    */
   public function getCollections()
   {
-    throw new \Exception("Please implement method getCollections()");
-  }
-
-  private function getPhalconCollections()
-  {
-    $collections = $this->getCollections();
-
-    $phalconCollections = [];
-    foreach($collections as $collection)
+    $collectionConfig = $this->getDI()->get('collectionConfig');
+    $collections = [];
+    if (!$collectionConfig)
     {
-      $phalconCollection = new PhalconCollection();
-
-      $phalconCollection
-        // It is advised to use a version number i.e. /v1/ in the URL
-        ->setPrefix($collection->prefix)
-        // Must be a string in order to support lazy loading
-        ->setHandler($collection->controller)
-        ->setLazy(true);
-
-      foreach($collection->routes as $route)
+      return [];
+    }
+    foreach ($collectionConfig as $version => $entitys)
+    {
+      foreach ($entitys as $entityName => $entity)
       {
-        // Switch should be quicker
-        switch($route->type)
-        {
-          case PhrestRequest::METHOD_GET:
-            $phalconCollection->get(
-              $route->routePattern,
-              $route->controllerAction
-            );
-            break;
-          case PhrestRequest::METHOD_POST:
-            $phalconCollection->post(
-              $route->routePattern,
-              $route->controllerAction
-            );
-            break;
-          case PhrestRequest::METHOD_PUT:
-            $phalconCollection->put(
-              $route->routePattern,
-              $route->controllerAction
-            );
-            break;
-          case PhrestRequest::METHOD_PATCH:
-            $phalconCollection->patch(
-              $route->routePattern,
-              $route->controllerAction
-            );
-            break;
-          case PhrestRequest::METHOD_DELETE:
-            $phalconCollection->delete(
-              $route->routePattern,
-              $route->controllerAction
-            );
-            break;
-          default:
-            throw new \Exception('Invalid CollectionRoute');
-            break;
-        }
+        $collection = new PhalconCollection();
+        $collection->setPrefix(
+          sprintf(
+            '/%s/%s',
+            strtolower($version),
+            strtolower($entityName)
+          ));
 
-        $phalconCollections[] = $phalconCollection;
+        $collection->setHandler(
+          sprintf(
+            '\\%s\\%s\\Controllers\\%s\\%sController',
+            $this->getDI()->get('config')->namespace,
+            $version,
+            $entityName,
+            $entityName
+          ));
+
+        $collection->setLazy(true);
+
+        foreach ($entity as $requestMethod => $actions)
+        {
+          foreach ($actions as $actionName => $action)
+          {
+            $collection->$requestMethod(
+              $action,
+              $actionName
+            );
+          }
+        }
+        $collections[] = $collection;
       }
     }
-
-    return $phalconCollections;
-  }
-
-  /**
-   * Override the standard "Collection" directory path
-   *
-   * @param $collectionDir
-   *
-   * @return $this
-   */
-  public function setCollectionDir($collectionDir)
-  {
-    $this->collectionDir = $collectionDir;
-
-    return $this;
+    return $collections;
   }
 
   /**
@@ -230,7 +189,7 @@ class PhrestAPI extends MicroMVC
         /** @var $exception Exception */
 
         // Handled exceptions
-        if(is_a($exception, 'Phrest\API\\Exceptions\\HandledException'))
+        if (is_a($exception, 'Phrest\API\\Exceptions\\HandledException'))
         {
           /** @var Response $response */
           $response = $di->get('response');
