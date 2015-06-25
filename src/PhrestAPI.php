@@ -2,9 +2,7 @@
 namespace Phrest\API;
 
 use Phalcon\DI;
-use Phrest\API\Collections\Collection;
 use Phalcon\Mvc\Micro\Collection as PhalconCollection;
-use Phrest\API\Collections\CollectionRoute;
 use Phrest\API\DI\PhrestDI;
 use Phrest\API\Request\PhrestRequest;
 use Phrest\API\Responses\CSVResponse;

@@ -6,15 +6,11 @@ use Phalcon\Exception;
 use Phalcon\Mvc\Model;
 use Phrest\API\Exceptions\HTTPException;
 use Phalcon\Mvc\Model\ResultsetInterface;
-use Phrest\API\Model\Query\QueryHelper;
-use Phrest\API\Model\Query\QueryOptions;
 use Phrest\API\Responses\CSVResponse;
 use Phrest\API\Responses\JSONResponse;
 use Phrest\API\Responses\Response;
 use Phrest\API\Responses\ResponseMessage;
 use Phrest\API\Request\PhrestRequest;
-use WZCore\Filter\Filter;
-use WZCore\Validate\Validate;
 
 /**
  * Base RESTful Controller.
@@ -28,7 +24,6 @@ use WZCore\Validate\Validate;
  *   Partials:
  *     offset=20
  *
- * @property \League\OAuth2\Server\Authorization $oauth2
  * @property Response $response
  * @property PhrestRequest $request
  */
@@ -371,7 +366,7 @@ class RESTController extends BaseController
     else
     {
       $this->response->data = (object)$model->toArray();
-      $this->response->meta->count = count($this->response->data);
+      $this->response->getMeta()->count = count($this->response->data);
     }
 
     // Expand related models
@@ -403,68 +398,9 @@ class RESTController extends BaseController
       {
         $this->response->data[] = (object)$model->toArray();
       }
-      $this->response->meta->count = count($models);
+      $this->response->getMeta()->count = count($models);
     }
 
     return $this->response;
-  }
-
-  /**
-   * Get a query based on the current request
-   * Searching is custom logic
-   *
-   * @param $modelClassName
-   *
-   * @return Model\Query\BuilderInterface
-   */
-  protected function getQueryBuilder($modelClassName)
-  {
-    $options = $this->createQueryOptionsFromRequest();
-
-    $query = QueryHelper::prepareQuery($modelClassName, $options);
-
-    return $query;
-  }
-
-  /**
-   * Createas a QueryOptions object from the request
-   * @return QueryOptions
-   */
-  protected function createQueryOptionsFromRequest(){
-
-    $options = QueryOptions::create();
-
-    // Get only certain IDs
-    if($this->request->hasQuery('ids'))
-    {
-      // Filter input
-      $ids = Filter::arrayOfInts($this->request->getQuery('ids'));
-
-      // Validate input
-      Validate::arrayHasValues($ids);
-
-      // Get where
-      $options->filterByIds($ids);
-    }
-
-    // Limit the query
-    if($this->request->hasLimit())
-    {
-      $options->setLimit($this->request->getLimit());
-    }
-
-    // Offset the query
-    if($this->request->hasOffset())
-    {
-      $options->offset = $this->request->getOffset();
-    }
-
-    // Sort the query
-    if($this->request->hasSortBy())
-    {
-      $options->sortBy = $this->request->getSortBy();
-      $options->sortOrder = $this->request->getSortOrder();
-    }
-    return $options;
   }
 }
