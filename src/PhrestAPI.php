@@ -91,6 +91,14 @@ class PhrestAPI extends MicroMVC
       $this->mount($collection);
     }
 
+    // Check unauthorized 401 access
+    $this->before(
+      function() use ($di)
+      {
+        throw new Exceptions\UnauthorizedException;
+      }
+    );
+
     // Send the response if required
     $this->after(
       function () use ($di)
