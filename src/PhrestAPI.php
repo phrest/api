@@ -4,13 +4,16 @@ namespace Phrest\API;
 use Phalcon\DI;
 use Phalcon\Mvc\Micro\Collection as PhalconCollection;
 use Phrest\API\DI\PhrestDI;
+use Phrest\API\Exceptions\HandledException;
 use Phrest\API\Request\PhrestRequest;
 use Phrest\API\Responses\CSVResponse;
 use Phrest\API\Responses\JSONResponse;
 use Phalcon\DI\FactoryDefault as DefaultDI;
 use Phalcon\Exception;
 use Phalcon\Mvc\Micro as MicroMVC;
-use Phalcon\Http\Response;
+use Phalcon\Http\Response as HttpResponse;
+use Phrest\API\Responses\Response;
+use Phrest\API\Responses\ResponseMessage;
 use Phrest\SDK\PhrestSDK;
 
 /**
@@ -24,6 +27,10 @@ class PhrestAPI extends MicroMVC
   /** @var bool */
   public $isInternalRequest = false;
 
+  /**
+   * @param PhrestDI    $di
+   * @param null|string $srcDir
+   */
   public function __construct(PhrestDI $di, $srcDir = null)
   {
     // Set the applications src directory
@@ -57,7 +64,7 @@ class PhrestAPI extends MicroMVC
         {
           // Set exception message
           $message = sprintf(
-            '404: Route not found: %s (via SDK) to %s',
+            'Route not found: %s (via SDK) to %s',
             PhrestSDK::$method,
             PhrestSDK::$uri
           );
@@ -68,13 +75,13 @@ class PhrestAPI extends MicroMVC
           /** @var PhrestRequest $request */
           $request = $di->get('request');
           $message = sprintf(
-            '404: Route not found: %s to %s',
+            'Route not found: %s to %s',
             $request->getMethod(),
             $request->getURI()
           );
         }
 
-        throw new \Exception($message, 404);
+        throw new HandledException($message, 404);
       }
     );
 
@@ -168,6 +175,7 @@ class PhrestAPI extends MicroMVC
         $collections[] = $collection;
       }
     }
+
     return $collections;
   }
 
@@ -179,7 +187,6 @@ class PhrestAPI extends MicroMVC
    */
   public function setExceptionHandler(DI $di)
   {
-    return $this;
 
     set_exception_handler(
       function ($exception) use ($di)
@@ -189,21 +196,32 @@ class PhrestAPI extends MicroMVC
         // Handled exceptions
         if (is_a($exception, 'Phrest\API\\Exceptions\\HandledException'))
         {
-          /** @var Response $response */
-          $response = $di->get('response');
+          $response = new Response();
 
-          //Set the content of the response
-          $response->setContent($exception->getMessage());
+          $response->setStatusCode($exception->getCode(),
+                                   $exception->getMessage());
 
-          return $response->send();
+          $response->addMessage($exception->getMessage(),
+                                ResponseMessage::TYPE_WARNING);
+
+          return (new JSONResponse($response))->send();
+        }
+        else
+        {
+          $response = new Response();
+
+          $response->setStatusCode(500, 'Internal Server Error');
+
+          $response->addMessage('Internal Server Error',
+                                ResponseMessage::TYPE_WARNING);
+
+          (new JSONResponse($response))->send();
         }
 
         // Log the exception
         error_log($exception);
         error_log($exception->getTraceAsString());
-
-        // Throw unhandled exceptions
-        throw $exception;
+        return true;
       }
     );
   }

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Phrest\API\Request;
 
 use Phalcon\Http\Request;
@@ -15,8 +14,6 @@ class PhrestRequest extends Request
   const METHOD_PATCH = 'PATCH';
   const METHOD_DELETE = 'DELETE';
 
-
-
   /**
    * Get oAuth access token
    * todo tidy up, standardize
@@ -26,22 +23,22 @@ class PhrestRequest extends Request
   public function getToken()
   {
 
-    if($this->has('token'))
+    if ($this->has('token'))
     {
       return $this->get('token');
     }
 
-    if($this->has('access_token'))
+    if ($this->has('access_token'))
     {
       return $this->get('access_token');
     }
 
-    if($this->has('accessToken'))
+    if ($this->has('accessToken'))
     {
       return $this->get('accessToken');
     }
 
-    if(
+    if (
     $authorization = $this->getHeader('AUTHORIZATION')
     )
     {
@@ -69,7 +66,7 @@ class PhrestRequest extends Request
    */
   public function getSearchQuery()
   {
-    if(!$this->isSearch())
+    if (!$this->isSearch())
     {
       throw new \Exception('Cannot get search query for non search request');
     }
@@ -106,7 +103,7 @@ class PhrestRequest extends Request
 
     $sortOrder = strtoupper($this->getQuery('sortOrder'));
 
-    if(!in_array($sortOrder, $possible))
+    if (!in_array($sortOrder, $possible))
     {
       throw new \Exception("Invalid sort order " . $sortOrder);
     }
@@ -128,7 +125,6 @@ class PhrestRequest extends Request
   {
     return $this->hasQuery('sortBy');
   }
-
 
   /**
    * Check if the request is for pagination
@@ -183,7 +179,7 @@ class PhrestRequest extends Request
    */
   public function getPartialFields()
   {
-    if(!$this->isPartial())
+    if (!$this->isPartial())
     {
       throw new \Exception('Cannot get partial fields for non partial request');
     }
@@ -211,7 +207,7 @@ class PhrestRequest extends Request
    */
   public function getExpandEntities()
   {
-    if(!$this->isExpand())
+    if (!$this->isExpand())
     {
       throw new \Exception('Cannot get Expand Entities for non expand request');
     }
@@ -226,12 +222,13 @@ class PhrestRequest extends Request
    */
   public function getMethod()
   {
-    if(isset($_GET['method']))
+    if (isset($_GET['method']))
     {
       return $_GET['method'];
     }
 
     $method = parent::getMethod();
+
     return $method;
   }
 

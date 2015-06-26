@@ -13,6 +13,7 @@ class ResponseArray extends Response
    * Add a Response
    *
    * @param Response $response
+   *
    * @return $this
    */
   public function addResponse(Response $response)
@@ -92,7 +93,7 @@ class ResponseArray extends Response
    */
   public function getCount()
   {
-    if(isset($this->meta->count))
+    if (isset($this->meta->count))
     {
       return $this->meta->count;
     }

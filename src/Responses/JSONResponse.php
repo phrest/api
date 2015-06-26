@@ -12,11 +12,12 @@ class JSONResponse extends HTTPResponse
   public $messages;
   public $data;
 
-
   public function __construct(Response $response)
   {
     parent::__construct();
 
+    $this->setStatusCode($response->getStatusCode(),
+                         $response->getStatusMessage());
 
     $this->data = $response->getData();
     $this->meta = $response->getMeta();
@@ -37,7 +38,7 @@ class JSONResponse extends HTTPResponse
     $request = $this->getDI()->get('request');
 
     // Set content
-    if(!$request->isHead())
+    if (!$request->isHead())
     {
       $this->setJsonContent($this);
     }

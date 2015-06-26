@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Phrest\API\Responses;
-
 
 class ResponseMessage
 {
@@ -11,6 +9,7 @@ class ResponseMessage
   const TYPE_INFO = 'info';
   const TYPE_ALERT = 'alert';
   const TYPE_SECONDARY = 'secondary';
+  const TYPE_ERROR = 'error';
 
   public $text;
   public $type;

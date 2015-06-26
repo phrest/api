@@ -1,13 +1,11 @@
 <?php
 
-
 namespace Phrest\API\Exceptions;
 
 use Exception;
 
 /**
  * HandledException
- *
  * Any Exception that extends this will be handled in the response object,
  * Any non-handled exceptions will work as normal
  */
@@ -28,7 +26,7 @@ class HandledException extends \Exception
       error_reporting(0);
     }
 
-    if(isset($this->message) && $message == '')
+    if (isset($this->message) && $message == '')
     {
       $message = $this->message;
     }
@@ -41,7 +39,9 @@ class HandledException extends \Exception
 
   /**
    * todo make use of this
+   *
    * @param $code
+   *
    * @return string
    */
   protected function getResponseDescription($code)

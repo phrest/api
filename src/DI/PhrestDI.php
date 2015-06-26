@@ -37,7 +37,6 @@ class PhrestDI extends FactoryDefault
       }
     );
 
-
     $this->setShared('router',
       function ()
       {

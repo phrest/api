@@ -139,13 +139,13 @@ class Response
     // Return public properties
     $dataVars = call_user_func('get_object_vars', $this);
 
-    if(count($dataVars) > 0)
+    if (count($dataVars) > 0)
     {
       array_walk_recursive(
         $dataVars,
         function (&$value)
         {
-          if(is_a($value, '\Phrest\API\Enums\AbstractEnum'))
+          if (is_a($value, '\Phrest\API\Enums\AbstractEnum'))
           {
             /** @var $value AbstractEnum */
             $value = $value->getValue();

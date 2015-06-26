@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Phrest\API\Exceptions;
 
 class ResourceNotFoundException extends HandledException

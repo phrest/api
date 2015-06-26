@@ -6,7 +6,7 @@ namespace Phrest\API\Controllers;
  *  extend the constructor (which we will need for our RESTController).
  *  Thus we extend DI\Injectable instead.
  */
-class BaseController extends \Phalcon\DI\Injectable{
-
+class BaseController extends \Phalcon\DI\Injectable
+{
 
 }

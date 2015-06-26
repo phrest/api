@@ -24,7 +24,7 @@ use Phrest\API\Request\PhrestRequest;
  *   Partials:
  *     offset=20
  *
- * @property Response $response
+ * @property Response      $response
  * @property PhrestRequest $request
  */
 class RESTController extends BaseController
@@ -33,6 +33,7 @@ class RESTController extends BaseController
   /**
    * If query string contains 'q' parameter.
    * This indicates the request is searching an entity
+   *
    * @var boolean
    */
   protected $isSearch = false;
@@ -40,52 +41,59 @@ class RESTController extends BaseController
   /**
    * If query contains 'fields' parameter.
    * This indicates the request wants back only certain fields from a record
+   *
    * @var boolean
    */
   protected $isPartial = false;
 
   /**
-   *
    * If query contains an 'expand' parameter.
    * This indicates the request wants to expand a related entity
+   *
    * @var boolean
    */
   protected $isExpand = false;
 
   /**
    * Set when there is a 'limit' query parameter
+   *
    * @var integer
    */
   protected $limit;
 
   /**
    * Set when there is an 'offset' query parameter
+   *
    * @var integer
    */
   protected $offset;
 
   /**
    * Array of fields requested to be searched against
+   *
    * @var array
    */
   protected $searchFields;
 
   /**
    * Array of fields requested to be returned
+   *
    * @var array
    */
   protected $partialFields;
 
   /**
    * Expand related entities
+   *
    * @var null
    */
   protected $expandFields;
 
   /**
-   * Sets which fields may be searched against, and which fields are allowed to be returned in
-   * partial responses.  This will be overridden in child Controllers that support searching
-   * and partial responses.
+   * Sets which fields may be searched against, and which fields are allowed to
+   * be returned in partial responses.  This will be overridden in child
+   * Controllers that support searching and partial responses.
+   *
    * @var array
    * todo remove
    */
@@ -100,15 +108,18 @@ class RESTController extends BaseController
   /**
    * Constructor, calls the parse method for the query string by default.
    *
-   * @param boolean $parseQueryString true Can be set to false if a controller needs to be called
-   *        from a different controller, bypassing the $allowedFields parse
+   * @param boolean $parseQueryString true Can be set to false if a controller
+   *                                  needs to be called from a different
+   *                                  controller, bypassing the $allowedFields
+   *                                  parse
+   *
    * @throws \Phrest\API\Exceptions\HTTPException
    * @return \Phrest\API\Controllers\RESTController
    */
   public function __construct($parseQueryString = true)
   {
-   // parent::__construct();
-    if($parseQueryString)
+    // parent::__construct();
+    if ($parseQueryString)
     {
       $this->parseRequest($this->allowedFields);
     }
@@ -121,7 +132,9 @@ class RESTController extends BaseController
    * todo
    * Parsed:
    *     array('name'=>'Benjamin Franklin', 'location'=>'Philadelphia')
+   *
    * @param  string $unparsed Unparsed search string
+   *
    * @return array            An array of fieldname=>value search parameters
    */
   protected function parseSearchParameters($unparsed)
@@ -137,7 +150,7 @@ class RESTController extends BaseController
     $mapped = array();
 
     // Split the strings at their colon, set left to key, and right to value.
-    foreach($splitFields as $field)
+    foreach ($splitFields as $field)
     {
       $splitField = explode(':', $field);
       $mapped[$splitField[0]] = $splitField[1];
@@ -157,7 +170,10 @@ class RESTController extends BaseController
    *     (id,name,location)
    * Parsed:
    *     array('id', 'name', 'location')
-   * @param  string $unparsed Unparsed string of fields to return in partial response
+   *
+   * @param  string $unparsed Unparsed string of fields to return in partial
+   *                          response
+   *
    * @return array            Array of fields to return in partial response
    */
   protected function parsePartialFields($unparsed)
@@ -168,17 +184,17 @@ class RESTController extends BaseController
     $requestedFields = explode(',', trim($unparsed, '()'));
 
     $models = [];
-    foreach($requestedFields as $key => $fieldName)
+    foreach ($requestedFields as $key => $fieldName)
     {
       // Related model: emails.email,email.id etc.
       $dotPos = strpos($fieldName, '.');
-      if($dotPos !== false)
+      if ($dotPos !== false)
       {
         $modelName = substr($fieldName, 0, $dotPos);
         $fieldName = substr($fieldName, $dotPos + 1);
 
         // Add to list of fields for related model
-        if(isset($models[$modelName]))
+        if (isset($models[$modelName]))
         {
           $models[$modelName][] = $fieldName;
         }
@@ -190,7 +206,7 @@ class RESTController extends BaseController
       // Same model, fields only
       else
       {
-        if(!isset($models['currentModel']))
+        if (!isset($models['currentModel']))
         {
           $models['currentModel'] = [];
         }
@@ -207,6 +223,7 @@ class RESTController extends BaseController
    * Sets Controller fields for these variables.
    *
    * @param  array $allowedFields Allowed fields array for search and partials
+   *
    * @throws \Phrest\API\Exceptions\HTTPException
    * @return boolean              Always true if no exception is thrown
    */
@@ -226,18 +243,18 @@ class RESTController extends BaseController
     $expandFields = $request->get('expand', null, null);
 
     // Set limits and offset, elsewise allow them to have defaults set in the Controller
-    $this->limit = ($request->get('limit', null, null)) ? : $this->limit;
-    $this->offset = ($request->get('offset', null, null)) ? : $this->offset;
+    $this->limit = ($request->get('limit', null, null)) ?: $this->limit;
+    $this->offset = ($request->get('offset', null, null)) ?: $this->offset;
 
     // If there's a 'q' parameter, parse the fields, then determine that all the fields in the search
     // are allowed to be searched from $allowedFields['search']
-    if($searchParams)
+    if ($searchParams)
     {
       $this->isSearch = true;
       $this->searchFields = $this->parseSearchParameters($searchParams);
 
       // This handly snippet determines if searchFields is a strict subset of allowedFields['search']
-      if(array_diff(
+      if (array_diff(
         array_keys($this->searchFields),
         $this->allowedFields['search']
       )
@@ -256,7 +273,7 @@ class RESTController extends BaseController
     }
 
     // Expanded fields
-    if($expandFields)
+    if ($expandFields)
     {
       $this->isExpand = true;
       $this->expandFields = $this->parseExpandedFields($expandFields);
@@ -264,7 +281,7 @@ class RESTController extends BaseController
 
     // If there's a 'fields' paramter, this is a partial request.  Ensures all the requested fields
     // are allowed in partial responses.
-    if($fields)
+    if ($fields)
     {
       $this->isPartial = true;
       $this->partialFields = $this->parsePartialFields($fields);
@@ -274,10 +291,11 @@ class RESTController extends BaseController
   }
 
   /**
-   * Provides a base CORS policy for routes like '/users' that represent a Resource's base url
-   * Origin is allowed from all urls.  Setting it here using the Origin header from the request
-   * allows multiple Origins to be served.  It is done this way instead of with a wildcard '*'
-   * because wildcard requests are not supported when a request needs credentials.
+   * Provides a base CORS policy for routes like '/users' that represent a
+   * Resource's base url Origin is allowed from all urls.  Setting it here
+   * using the Origin header from the request allows multiple Origins to be
+   * served.  It is done this way instead of with a wildcard '*' because
+   * wildcard requests are not supported when a request needs credentials.
    *
    * @return true
    */
@@ -298,11 +316,13 @@ class RESTController extends BaseController
       "origin, x-requested-with, content-type"
     );
     $response->setHeader('Access-Control-Max-Age', '86400');
+
     return true;
   }
 
   /**
-   * Provides a CORS policy for routes like '/users/123' that represent a specific resource
+   * Provides a CORS policy for routes like '/users/123' that represent a
+   * specific resource
    *
    * @return true
    */
@@ -323,6 +343,7 @@ class RESTController extends BaseController
       "origin, x-requested-with, content-type"
     );
     $response->setHeader('Access-Control-Max-Age', '86400');
+
     return true;
   }
 
@@ -332,10 +353,10 @@ class RESTController extends BaseController
   protected function respondWithModel(Model $model, $functionName = null)
   {
     // Return a partial response
-    if($functionName && isset($this->partialFields))
+    if ($functionName && isset($this->partialFields))
     {
       // Validate that there are fields set for this method
-      if(!isset($this->allowedPartialFields[$functionName]))
+      if (!isset($this->allowedPartialFields[$functionName]))
       {
         throw new Exception(
           'Partial fields not specified for ' . $functionName
@@ -343,7 +364,7 @@ class RESTController extends BaseController
       }
 
       // Determines if fields is a strict subset of allowed fields
-      if(array_diff(
+      if (array_diff(
         $this->partialFields,
         $this->allowedPartialFields[$functionName]
       )
@@ -370,10 +391,10 @@ class RESTController extends BaseController
     }
 
     // Expand related models
-    if($this->isExpand)
+    if ($this->isExpand)
     {
       // todo allow for parsed related fields, model.field
-      foreach($this->expandFields as $modelField)
+      foreach ($this->expandFields as $modelField)
       {
         //$this->response[$modelField] = $model->getRelated($modelField)->toArray();
       }
@@ -388,13 +409,13 @@ class RESTController extends BaseController
   protected function respondWithModels(ResultsetInterface $models)
   {
 
-    if(count($models) == 0)
+    if (count($models) == 0)
     {
       $this->response->data = [];
     }
     else
     {
-      foreach($models as $model)
+      foreach ($models as $model)
       {
         $this->response->data[] = (object)$model->toArray();
       }
