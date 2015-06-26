@@ -95,7 +95,8 @@ class PhrestAPI extends MicroMVC
     $this->before(
       function() use ($di)
       {
-        throw new Exceptions\UnauthorizedException;
+        // If the access is unauthorized:
+        //throw new Exceptions\UnauthorizedException;
       }
     );
 
