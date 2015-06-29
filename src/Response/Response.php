@@ -1,6 +1,6 @@
 <?php
 
-namespace Phrest\API\Responses;
+namespace Phrest\API\Response;
 
 use Phalcon\DI;
 use Phrest\API\Enums\AbstractEnum;
@@ -17,6 +17,9 @@ class Response
   /** @var bool Is a head request */
   protected $isHEAD = false;
 
+  /**
+   *
+   */
   public function __construct()
   {
     $this->meta = new ResponseMeta();

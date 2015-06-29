@@ -15,6 +15,20 @@ class PhrestRequest extends Request
   const METHOD_DELETE = 'DELETE';
 
   /**
+   * @var array
+   */
+  public static $responseFormats
+    = [
+      'json',
+      'csv'
+    ];
+
+  /**
+   * @var bool|string
+   */
+  protected $format = false;
+
+  /**
    * Get oAuth access token
    * todo tidy up, standardize
    *
@@ -240,7 +254,14 @@ class PhrestRequest extends Request
    */
   public function isJSON()
   {
-    return true;
+    if ($this->format == 'json')
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
   }
 
   /**
@@ -251,7 +272,14 @@ class PhrestRequest extends Request
    */
   public function isCSV()
   {
-    return false;
+    if ($this->format == 'csv')
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
   }
 
   /**
@@ -263,5 +291,25 @@ class PhrestRequest extends Request
   public function isInternal()
   {
     return false;
+  }
+
+  /**
+   * @param string $format
+   *
+   * @return PhrestRequest
+   */
+  public function setFormat($format)
+  {
+    $this->format = $format;
+
+    return $this;
+}
+
+  /**
+   * @return bool|string
+   */
+  public function getFormat()
+  {
+    return $this->format;
   }
 }

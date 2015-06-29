@@ -1,6 +1,6 @@
 <?php
 
-namespace Phrest\API\Responses;
+namespace Phrest\API\Response;
 
 class ResponseMessage
 {

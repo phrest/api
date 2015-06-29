@@ -1,5 +1,5 @@
 <?php
-namespace Phrest\API\Responses;
+namespace Phrest\API\Response;
 
 class CSVResponse extends Response
 {

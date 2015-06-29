@@ -6,10 +6,10 @@ use Phalcon\Exception;
 use Phalcon\Mvc\Model;
 use Phrest\API\Exceptions\HTTPException;
 use Phalcon\Mvc\Model\ResultsetInterface;
-use Phrest\API\Responses\CSVResponse;
-use Phrest\API\Responses\JSONResponse;
-use Phrest\API\Responses\Response;
-use Phrest\API\Responses\ResponseMessage;
+use Phrest\API\Response\CSVResponse;
+use Phrest\API\Response\JSONResponse;
+use Phrest\API\Response\Response;
+use Phrest\API\Response\ResponseMessage;
 use Phrest\API\Request\PhrestRequest;
 
 /**

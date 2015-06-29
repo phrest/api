@@ -2,18 +2,19 @@
 namespace Phrest\API;
 
 use Phalcon\DI;
+use Phalcon\Http\Client\Request;
 use Phalcon\Mvc\Micro\Collection as PhalconCollection;
 use Phrest\API\DI\PhrestDI;
 use Phrest\API\Exceptions\HandledException;
 use Phrest\API\Request\PhrestRequest;
-use Phrest\API\Responses\CSVResponse;
-use Phrest\API\Responses\JSONResponse;
+use Phrest\API\Response\CSVResponse;
+use Phrest\API\Response\JSONResponse;
 use Phalcon\DI\FactoryDefault as DefaultDI;
 use Phalcon\Exception;
 use Phalcon\Mvc\Micro as MicroMVC;
 use Phalcon\Http\Response as HttpResponse;
-use Phrest\API\Responses\Response;
-use Phrest\API\Responses\ResponseMessage;
+use Phrest\API\Response\Response;
+use Phrest\API\Response\ResponseMessage;
 use Phrest\SDK\PhrestSDK;
 
 /**
@@ -91,6 +92,8 @@ class PhrestAPI extends MicroMVC
       $this->mount($collection);
     }
 
+    $this->getResponseType();
+
     // Check unauthorized 401 access
     $this->before(
       function() use ($di)
@@ -114,7 +117,7 @@ class PhrestAPI extends MicroMVC
 
         if (is_a($controllerResponse, 'Phrest\API\Responses\ResponseArray'))
         {
-          /** @var $controllerResponse \Phrest\API\Responses\ResponseArray */
+          /** @var $controllerResponse \Phrest\API\Response\ResponseArray */
           $controllerResponse->setCount($controllerResponse->getCount());
         }
 
@@ -123,9 +126,13 @@ class PhrestAPI extends MicroMVC
         /** @var PhrestRequest $response */
         $request = $di->get('request');
 
-        if ($request->isJSON())
+        if ($request->isJSON() || !$request->getFormat())
         {
           $di->set('response', new JSONResponse($controllerResponse));
+        }
+        elseif ($request->isCSV())
+        {
+          $di->set('response', new CSVResponse($controllerResponse));
         }
 
         /** @var Response $response */
@@ -175,6 +182,18 @@ class PhrestAPI extends MicroMVC
         {
           foreach ($actions as $actionName => $action)
           {
+            if (!in_array(
+              strtoupper($requestMethod),
+              (new \ReflectionClass(PhrestRequest::class))->getConstants()
+            )
+            )
+            {
+              throw new \Exception(
+                "Invalid request method in the config file: '{$requestMethod}'"
+              );
+            }
+            $requestMethod = strtolower($requestMethod);
+
             $collection->$requestMethod(
               $action,
               $actionName
@@ -186,6 +205,28 @@ class PhrestAPI extends MicroMVC
     }
 
     return $collections;
+  }
+
+  public function getResponseType()
+  {
+    if (!$this->isInternalRequest)
+    {
+      $extension = strtolower(pathinfo($_GET['_url'], PATHINFO_EXTENSION));
+      if (!strlen($extension))
+      {
+        return;
+      }
+
+      if (in_array($extension, PhrestRequest::$responseFormats))
+      {
+        /** @var PhrestRequest $request */
+        $request = $this->getDI()->get('request');
+        $request->setFormat($extension);
+      }
+
+      $_GET['_url'] = str_replace('.' . $extension, '', $_GET['_url']);
+
+    }
   }
 
   /**
@@ -230,6 +271,7 @@ class PhrestAPI extends MicroMVC
         // Log the exception
         error_log($exception);
         error_log($exception->getTraceAsString());
+
         return true;
       }
     );

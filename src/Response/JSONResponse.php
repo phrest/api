@@ -1,5 +1,5 @@
 <?php
-namespace Phrest\API\Responses;
+namespace Phrest\API\Response;
 
 use Phalcon\Http\Response as HTTPResponse;
 use Phrest\API\Request\PhrestRequest;
