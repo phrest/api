@@ -1,10 +1,12 @@
 <?php
 namespace Phrest\API;
 
-use Phalcon\DI;
+use Phalcon\DiInterface;
 use Phalcon\Http\Client\Request;
 use Phalcon\Mvc\Micro\Collection as PhalconCollection;
 use Phrest\API\DI\PhrestDI;
+use Phrest\API\DI\PhrestDIInterface;
+use Phrest\API\Enums\RequestMethodEnum;
 use Phrest\API\Exceptions\HandledException;
 use Phrest\API\Request\PhrestRequest;
 use Phrest\API\Response\CSVResponse;
@@ -16,6 +18,7 @@ use Phalcon\Http\Response as HttpResponse;
 use Phrest\API\Response\Response;
 use Phrest\API\Response\ResponseMessage;
 use Phrest\SDK\PhrestSDK;
+use Phuse\Framework\Module\Config\Config;
 
 /**
  * Phalcon API Application
@@ -29,20 +32,17 @@ class PhrestAPI extends MicroMVC
   public $isInternalRequest = false;
 
   /**
-   * @param PhrestDI    $di
-   * @param null|string $srcDir
+   * @param PhrestDIInterface $di
+   * @param null|string       $srcDir
    */
-  public function __construct(PhrestDI $di, $srcDir = null)
+  public function __construct(PhrestDIInterface $di, $srcDir = null)
   {
-    // Set the applications src directory
     if (!$srcDir)
     {
-      // Assume the src directory based on standard structure
       $srcDir = dirname(dirname(dirname(dirname(__DIR__)))) . '/src';
     }
     $this->srcDir = $srcDir;
 
-    // Collections are how we handler our routes
     $di->set(
       'collections',
       function ()
@@ -96,7 +96,7 @@ class PhrestAPI extends MicroMVC
 
     // Check unauthorized 401 access
     $this->before(
-      function() use ($di)
+      function () use ($di)
       {
         // If the access is unauthorized:
         //throw new Exceptions\UnauthorizedException;
@@ -121,9 +121,7 @@ class PhrestAPI extends MicroMVC
           $controllerResponse->setCount($controllerResponse->getCount());
         }
 
-        //var_dump($controllerResponse);
-
-        /** @var PhrestRequest $response */
+        /** @var PhrestRequest $request */
         $request = $di->get('request');
 
         if ($request->isJSON() || !$request->getFormat())
@@ -135,7 +133,7 @@ class PhrestAPI extends MicroMVC
           $di->set('response', new CSVResponse($controllerResponse));
         }
 
-        /** @var Response $response */
+        /** @var HttpResponse $response */
         $response = $di->get('response');
         $response->send();
       }
@@ -143,19 +141,19 @@ class PhrestAPI extends MicroMVC
   }
 
   /**
-   * Get collections
-   *
    * @return array
+   * @throws \Exception
    */
   public function getCollections()
   {
+    /** @var Config $collectionConfig */
     $collectionConfig = $this->getDI()->get('collectionConfig');
     $collections = [];
     if (!$collectionConfig)
     {
       return [];
     }
-    foreach ($collectionConfig as $version => $entitys)
+    foreach ($collectionConfig->getRequiredArray('versions') as $version => $entitys)
     {
       foreach ($entitys as $entityName => $entity)
       {
@@ -170,7 +168,7 @@ class PhrestAPI extends MicroMVC
         $collection->setHandler(
           sprintf(
             '\\%s\\%s\\Controllers\\%s\\%sController',
-            $this->getDI()->get('config')->namespace,
+            $collectionConfig->getRequiredString('namespace'),
             $version,
             $entityName,
             $entityName
@@ -182,11 +180,12 @@ class PhrestAPI extends MicroMVC
         {
           foreach ($actions as $actionName => $action)
           {
-            if (!in_array(
+            $validMethod = in_array(
               strtoupper($requestMethod),
-              (new \ReflectionClass(PhrestRequest::class))->getConstants()
-            )
-            )
+              RequestMethodEnum::getConstants()
+            );
+
+            if (!$validMethod)
             {
               throw new \Exception(
                 "Invalid request method in the config file: '{$requestMethod}'"
@@ -207,6 +206,9 @@ class PhrestAPI extends MicroMVC
     return $collections;
   }
 
+  /**
+   *
+   */
   public function getResponseType()
   {
     if (!$this->isInternalRequest)
@@ -225,7 +227,6 @@ class PhrestAPI extends MicroMVC
       }
 
       $_GET['_url'] = str_replace('.' . $extension, '', $_GET['_url']);
-
     }
   }
 
@@ -235,9 +236,8 @@ class PhrestAPI extends MicroMVC
    * was catching the exception before it would be handled, need
    * to come back to this
    */
-  public function setExceptionHandler(DI $di)
+  public function setExceptionHandler(DiInterface $di)
   {
-
     set_exception_handler(
       function ($exception) use ($di)
       {
@@ -248,11 +248,15 @@ class PhrestAPI extends MicroMVC
         {
           $response = new Response();
 
-          $response->setStatusCode($exception->getCode(),
-                                   $exception->getMessage());
+          $response->setStatusCode(
+            $exception->getCode(),
+            $exception->getMessage()
+          );
 
-          $response->addMessage($exception->getMessage(),
-                                ResponseMessage::TYPE_WARNING);
+          $response->addMessage(
+            $exception->getMessage(),
+            ResponseMessage::TYPE_WARNING
+          );
 
           return (new JSONResponse($response))->send();
         }
@@ -262,8 +266,10 @@ class PhrestAPI extends MicroMVC
 
           $response->setStatusCode(500, 'Internal Server Error');
 
-          $response->addMessage('Internal Server Error',
-                                ResponseMessage::TYPE_WARNING);
+          $response->addMessage(
+            'Internal Server Error',
+            ResponseMessage::TYPE_WARNING
+          );
 
           (new JSONResponse($response))->send();
         }

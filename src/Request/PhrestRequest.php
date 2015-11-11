@@ -6,21 +6,13 @@ use Phalcon\Http\Request;
 
 class PhrestRequest extends Request
 {
-  const METHOD_OPTIONS = 'OPTIONS';
-  const METHOD_POST = 'POST';
-  const METHOD_HEAD = 'HEAD';
-  const METHOD_GET = 'GET';
-  const METHOD_PUT = 'PUT';
-  const METHOD_PATCH = 'PATCH';
-  const METHOD_DELETE = 'DELETE';
-
   /**
    * @var array
    */
   public static $responseFormats
     = [
       'json',
-      'csv'
+      'csv',
     ];
 
   /**
@@ -52,9 +44,7 @@ class PhrestRequest extends Request
       return $this->get('accessToken');
     }
 
-    if (
-    $authorization = $this->getHeader('AUTHORIZATION')
-    )
+    if ($authorization = $this->getHeader('AUTHORIZATION'))
     {
       return $authorization;
     }
@@ -88,31 +78,47 @@ class PhrestRequest extends Request
     return $this->getQuery('q');
   }
 
+  /**
+   * @return bool
+   */
   public function hasLimit()
   {
     return $this->hasQuery('limit');
   }
 
+  /**
+   * @return bool
+   */
   public function hasOffset()
   {
     return $this->hasQuery('offset');
   }
 
+  /**
+   * @return bool
+   */
   public function getLimit()
   {
     return (int)$this->getQuery('limit');
   }
 
+  /**
+   * @return bool
+   */
   public function getOffset()
   {
     return (int)$this->getQuery('offset');
   }
 
+  /**
+   * @return String
+   * @throws \Exception
+   */
   public function getSortOrder()
   {
     $possible = [
       'ASC',
-      'DESC'
+      'DESC',
     ];
 
     $sortOrder = strtoupper($this->getQuery('sortOrder'));
@@ -125,16 +131,25 @@ class PhrestRequest extends Request
     return $sortOrder;
   }
 
+  /**
+   * @return bool
+   */
   public function hasSortOrder()
   {
     return $this->has('sortOrder');
   }
 
+  /**
+   * @return string
+   */
   public function getSortBy()
   {
     return $this->getQuery('sortBy');
   }
 
+  /**
+   * @return bool
+   */
   public function hasSortBy()
   {
     return $this->hasQuery('sortBy');
@@ -303,7 +318,7 @@ class PhrestRequest extends Request
     $this->format = $format;
 
     return $this;
-}
+  }
 
   /**
    * @return bool|string
