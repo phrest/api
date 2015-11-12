@@ -34,14 +34,16 @@ class PhrestAPI extends MicroMVC
   /**
    * @param PhrestDIInterface $di
    * @param null|string       $srcDir
+   * @param bool $internalRequest
    */
-  public function __construct(PhrestDIInterface $di, $srcDir = null)
+  public function __construct(PhrestDIInterface $di, $srcDir = null, $internalRequest = false)
   {
     if (!$srcDir)
     {
       $srcDir = dirname(dirname(dirname(dirname(__DIR__)))) . '/src';
     }
     $this->srcDir = $srcDir;
+    $this->isInternalRequest = $internalRequest;
 
     $di->set(
       'collections',
@@ -126,16 +128,16 @@ class PhrestAPI extends MicroMVC
 
         if ($request->isJSON() || !$request->getFormat())
         {
-          $di->set('response', new JSONResponse($controllerResponse));
+          $json = new JSONResponse($controllerResponse);
+
+          return $json->send();
         }
         elseif ($request->isCSV())
         {
-          $di->set('response', new CSVResponse($controllerResponse));
-        }
+          $csv = new CSVResponse($controllerResponse);
 
-        /** @var HttpResponse $response */
-        $response = $di->get('response');
-        $response->send();
+          return $csv->send();
+        }
       }
     );
   }

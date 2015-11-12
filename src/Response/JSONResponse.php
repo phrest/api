@@ -6,18 +6,29 @@ use Phrest\API\Request\PhrestRequest;
 
 class JSONResponse extends HTTPResponse
 {
+  /** @var bool */
   protected $envelope = true;
 
+  /** @var ResponseMeta */
   public $meta;
+
+  /** @var ResponseMessage[] */
   public $messages;
+
+  /** @var array */
   public $data;
 
+  /**
+   * @param Response $response
+   */
   public function __construct(Response $response)
   {
     parent::__construct();
 
-    $this->setStatusCode($response->getStatusCode(),
-                         $response->getStatusMessage());
+    $this->setStatusCode(
+      $response->getStatusCode(),
+      $response->getStatusMessage()
+    );
 
     $this->data = $response->getData();
     $this->meta = $response->getMeta();
