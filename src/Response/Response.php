@@ -153,6 +153,10 @@ class Response
             /** @var $value AbstractEnum */
             $value = $value->getValue();
           }
+          elseif ($value instanceof \Phrest\API\Response\ResponseArray)
+          {
+            $value = $value->getData();
+          }
         }
       );
     }
