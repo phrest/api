@@ -18,7 +18,6 @@
   },
   "require":     {
     "ext-yaml": "*",
-    "marc-mabe/php-enum": "v1.2.0",
-    "zendframework/zend-code": "2.3.*@dev"
+    "marc-mabe/php-enum": "v1.2.0"
   }
 }
