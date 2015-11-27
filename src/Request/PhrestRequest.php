@@ -298,6 +298,14 @@ class PhrestRequest extends Request
   }
 
   /**
+   * @return bool
+   */
+  public function isPretty()
+  {
+    return $this->hasQuery('pretty');
+  }
+
+  /**
    * Check if this is an internal request
    * todo
    *

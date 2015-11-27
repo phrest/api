@@ -148,14 +148,18 @@ class Response
         $dataVars,
         function (&$value)
         {
-          if (is_a($value, '\Phrest\API\Enums\AbstractEnum'))
+          if ($value instanceof AbstractEnum)
           {
             /** @var $value AbstractEnum */
             $value = $value->getValue();
           }
-          elseif ($value instanceof \Phrest\API\Response\ResponseArray)
+          elseif ($value instanceof Response)
           {
             $value = $value->getData();
+          }
+          elseif ($value instanceof ResponseArray)
+          {
+            $value = $value->getResponses();
           }
         }
       );
