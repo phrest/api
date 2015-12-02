@@ -51,6 +51,15 @@ class JSONResponse extends HTTPResponse
     // Set content
     if (!$request->isHead())
     {
+      if (empty($this->messages))
+      {
+        $this->messages = null;
+      }
+      if (empty($this->data))
+      {
+        $this->data = null;
+      }
+
       if ($request->isPretty())
       {
         $this->setContent(json_encode($this, JSON_PRETTY_PRINT));
