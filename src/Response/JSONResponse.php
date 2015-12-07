@@ -62,11 +62,11 @@ class JSONResponse extends HTTPResponse
 
       if ($request->isPretty())
       {
-        $this->setContent(json_encode($this, JSON_PRETTY_PRINT));
+        $this->setContent(json_encode($this, JSON_PRETTY_PRINT | JSON_NUMERIC_CHECK));
       }
       else
       {
-        $this->setJsonContent($this);
+        $this->setContent(json_encode($this, JSON_NUMERIC_CHECK));
       }
     }
 
