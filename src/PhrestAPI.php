@@ -240,7 +240,7 @@ class PhrestAPI extends MicroMVC
    */
   public function setExceptionHandler(DiInterface $di)
   {
-    //return $this;
+    return $this;
     set_exception_handler(
       function ($exception) use ($di)
       {
