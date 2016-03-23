@@ -215,6 +215,11 @@ class PhrestAPI extends MicroMVC
   {
     if (!$this->isInternalRequest)
     {
+      if (!isset($_GET['_url']))
+      {
+        return;
+      }
+
       $extension = strtolower(pathinfo($_GET['_url'], PATHINFO_EXTENSION));
       if (!strlen($extension))
       {
