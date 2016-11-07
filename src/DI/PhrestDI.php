@@ -2,7 +2,6 @@
 
 namespace Phrest\API\DI;
 
-use Phalcon\DI\FactoryDefault as PhalconDI;
 use Phalcon\DI;
 use Phalcon\DI\FactoryDefault;
 use Phalcon\Http\Request;
