@@ -45,11 +45,13 @@ class PhrestAPI extends MicroMVC
     $this->srcDir = $srcDir;
     $this->isInternalRequest = $internalRequest;
 
+    $self = $this;
+
     $di->set(
       'collections',
-      function ()
+      function () use ($self)
       {
-        return $this->getCollections();
+        return $self->getCollections();
       }
     );
 
