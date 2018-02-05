@@ -79,7 +79,7 @@ class PhrestAPI extends MicroMVC
           $request = $di->get('request');
           $message = sprintf(
             'Route not found: %s to %s',
-            $request->getMethod(),
+            $request->getRequestMethod(),
             $request->getURI()
           );
         }
