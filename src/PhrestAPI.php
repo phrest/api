@@ -19,6 +19,7 @@ use Phrest\API\Response\Response;
 use Phrest\API\Response\ResponseMessage;
 use Phrest\SDK\PhrestSDK;
 use Phuse\Framework\Module\Config\Config;
+use \Phalcon\Http\Client\Response as PhalconResponse;
 
 /**
  * Phalcon API Application
@@ -128,15 +129,36 @@ class PhrestAPI extends MicroMVC
 
         if ($request->isJSON() || !$request->getFormat())
         {
-          $json = new JSONResponse($controllerResponse);
+          if($controllerResponse instanceof Response)
+          {
+            $json = new JSONResponse($controllerResponse);
 
-          return $json->send();
+            return $json->send();
+          }
+          else
+          {
+            if($controllerResponse instanceof PhalconResponse)
+            {
+              $response = $controllerResponse;
+            }
+            else
+            {
+              $response = new PhalconResponse();
+              $response->body = $controllerResponse;
+            }
+
+            return $response;
+          }
         }
         elseif ($request->isCSV())
         {
           $csv = new CSVResponse($controllerResponse);
 
           return $csv->send();
+        }
+        else
+        {
+          return $this->response->send();
         }
       }
     );
