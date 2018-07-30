@@ -19,7 +19,7 @@ use Phrest\API\Response\Response;
 use Phrest\API\Response\ResponseMessage;
 use Phrest\SDK\PhrestSDK;
 use Phuse\Framework\Module\Config\Config;
-use \Phalcon\Http\Client\Response as PhalconResponse;
+use Phuse\Framework\Site\Api\v1\Responses\Ping\PingResponse;
 
 /**
  * Phalcon API Application
@@ -135,19 +135,15 @@ class PhrestAPI extends MicroMVC
 
             return $json->send();
           }
+          elseif(is_string($controllerResponse))
+          {
+            $response = new \Phalcon\Http\Response();
+            $response->setContent($controllerResponse);
+            $response->send();
+          }
           else
           {
-            if($controllerResponse instanceof PhalconResponse)
-            {
-              $response = $controllerResponse;
-            }
-            else
-            {
-              $response = new PhalconResponse();
-              $response->body = $controllerResponse;
-            }
-
-            return $response;
+            throw new \Exception("Response not handled");
           }
         }
         elseif ($request->isCSV())
