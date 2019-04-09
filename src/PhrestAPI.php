@@ -1,6 +1,5 @@
 <?php
 namespace Phrest\API;
-
 use Phalcon\DiInterface;
 use Phalcon\Http\Client\Request;
 use Phalcon\Mvc\Micro\Collection as PhalconCollection;
@@ -19,7 +18,7 @@ use Phrest\API\Response\Response;
 use Phrest\API\Response\ResponseMessage;
 use Phrest\SDK\PhrestSDK;
 use Phuse\Framework\Module\Config\Config;
-
+use Phuse\Framework\Site\Api\v1\Responses\Ping\PingResponse;
 /**
  * Phalcon API Application
  */
@@ -27,10 +26,8 @@ class PhrestAPI extends MicroMVC
 {
   /** @var  string */
   protected $srcDir;
-
   /** @var bool */
   public $isInternalRequest = false;
-
   /**
    * @param PhrestDIInterface $di
    * @param null|string       $srcDir
@@ -44,9 +41,7 @@ class PhrestAPI extends MicroMVC
     }
     $this->srcDir = $srcDir;
     $this->isInternalRequest = $internalRequest;
-
     $self = $this;
-
     $di->set(
       'collections',
       function () use ($self)
@@ -54,12 +49,9 @@ class PhrestAPI extends MicroMVC
         return $self->getCollections();
       }
     );
-
     // Set the Exception handler
     $this->setExceptionHandler($di);
-
     $this->setDI($di);
-
     // Handle a 404
     $this->notFound(
       function () use ($di)
@@ -85,19 +77,15 @@ class PhrestAPI extends MicroMVC
             $request->getURI()
           );
         }
-
         throw new HandledException($message, 404);
       }
     );
-
     // Mount all of the collections, which makes the routes active.
     foreach ($di->get('collections') as $collection)
     {
       $this->mount($collection);
     }
-
     $this->getResponseType();
-
     // Check unauthorized 401 access
     $this->before(
       function () use ($di)
@@ -106,7 +94,6 @@ class PhrestAPI extends MicroMVC
         //throw new Exceptions\UnauthorizedException;
       }
     );
-
     // Send the response if required
     $this->after(
       function () use ($di)
@@ -116,34 +103,44 @@ class PhrestAPI extends MicroMVC
         {
           return;
         }
-
         $controllerResponse = $this->getReturnedValue();
-
         if (is_a($controllerResponse, 'Phrest\API\Responses\ResponseArray'))
         {
           /** @var $controllerResponse \Phrest\API\Response\ResponseArray */
           $controllerResponse->setCount($controllerResponse->getCount());
         }
-
         /** @var PhrestRequest $request */
         $request = $di->get('request');
-
         if ($request->isJSON() || !$request->getFormat())
         {
-          $json = new JSONResponse($controllerResponse);
-
-          return $json->send();
+          if($controllerResponse instanceof Response)
+          {
+            $json = new JSONResponse($controllerResponse);
+            return $json->send();
+          }
+          elseif(is_string($controllerResponse))
+          {
+            $response = new \Phalcon\Http\Response();
+            $response->setContent($controllerResponse);
+            $response->send();
+          }
+          else
+          {
+            throw new \Exception("Response not handled");
+          }
         }
         elseif ($request->isCSV())
         {
           $csv = new CSVResponse($controllerResponse);
-
           return $csv->send();
+        }
+        else
+        {
+          return $this->response->send();
         }
       }
     );
   }
-
   /**
    * @return array
    * @throws \Exception
@@ -168,7 +165,6 @@ class PhrestAPI extends MicroMVC
             strtolower($version),
             strtolower($entityName)
           ));
-
         $collection->setHandler(
           sprintf(
             '\\%s\\%s\\Controllers\\%s\\%sController',
@@ -177,9 +173,7 @@ class PhrestAPI extends MicroMVC
             $entityName,
             $entityName
           ));
-
         $collection->setLazy(true);
-
         foreach ($entity as $requestMethod => $actions)
         {
           foreach ($actions as $actionName => $action)
@@ -188,7 +182,6 @@ class PhrestAPI extends MicroMVC
               strtoupper($requestMethod),
               RequestMethodEnum::getConstants()
             );
-
             if (!$validMethod)
             {
               throw new \Exception(
@@ -196,7 +189,6 @@ class PhrestAPI extends MicroMVC
               );
             }
             $requestMethod = strtolower($requestMethod);
-
             $collection->$requestMethod(
               $action,
               $actionName
@@ -206,10 +198,8 @@ class PhrestAPI extends MicroMVC
         $collections[] = $collection;
       }
     }
-
     return $collections;
   }
-
   /**
    *
    */
@@ -221,24 +211,20 @@ class PhrestAPI extends MicroMVC
       {
         return;
       }
-
       $extension = strtolower(pathinfo($_GET['_url'], PATHINFO_EXTENSION));
       if (!strlen($extension))
       {
         return;
       }
-
       if (in_array($extension, PhrestRequest::$responseFormats))
       {
         /** @var PhrestRequest $request */
         $request = $this->getDI()->get('request');
         $request->setFormat($extension);
       }
-
       $_GET['_url'] = str_replace('.' . $extension, '', $_GET['_url']);
     }
   }
-
   /**
    * If the application throws an HTTPException, respond correctly (json etc.)
    * todo this was not working as the try catch blocks in controllers
@@ -252,42 +238,33 @@ class PhrestAPI extends MicroMVC
       function ($exception) use ($di)
       {
         /** @var $exception Exception */
-
         // Handled exceptions
         if (is_a($exception, 'Phrest\API\\Exceptions\\HandledException'))
         {
           $response = new Response();
-
           $response->setStatusCode(
             $exception->getCode(),
             $exception->getMessage()
           );
-
           $response->addMessage(
             $exception->getMessage(),
             ResponseMessage::TYPE_WARNING
           );
-
           return (new JSONResponse($response))->send();
         }
         else
         {
           $response = new Response();
-
           $response->setStatusCode(500, 'Internal Server Error');
-
           $response->addMessage(
             'Internal Server Error',
             ResponseMessage::TYPE_WARNING
           );
-
           (new JSONResponse($response))->send();
         }
-
         // Log the exception
         error_log($exception);
         error_log($exception->getTraceAsString());
-
         return true;
       }
     );
