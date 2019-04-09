@@ -249,7 +249,7 @@ class PhrestRequest extends Request
    *
    * @return string
    */
-  public function getMethod()
+  public function getRequestMethod()
   {
     if (isset($_GET['method']))
     {

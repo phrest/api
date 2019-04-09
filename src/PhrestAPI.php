@@ -46,11 +46,13 @@ class PhrestAPI extends MicroMVC
     $this->srcDir = $srcDir;
     $this->isInternalRequest = $internalRequest;
 
+    $self = $this;
+
     $di->set(
       'collections',
-      function ()
+      function () use ($self)
       {
-        return $this->getCollections();
+        return $self->getCollections();
       }
     );
 
@@ -80,7 +82,7 @@ class PhrestAPI extends MicroMVC
           $request = $di->get('request');
           $message = sprintf(
             'Route not found: %s to %s',
-            $request->getMethod(),
+            $request->getRequestMethod(),
             $request->getURI()
           );
         }
