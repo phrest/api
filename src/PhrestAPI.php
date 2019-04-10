@@ -121,6 +121,7 @@ class PhrestAPI extends MicroMVC
           elseif(is_string($controllerResponse))
           {
             $response = new \Phalcon\Http\Response();
+            $response->setContentLength(strlen($controllerResponse));
             $response->setContent($controllerResponse);
             $response->send();
           }
