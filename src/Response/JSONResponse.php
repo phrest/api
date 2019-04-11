@@ -2,6 +2,7 @@
 namespace Phrest\API\Response;
 
 use Phalcon\Http\Response as HTTPResponse;
+use Phrest\API\Enums\AbstractEnum;
 use Phrest\API\Request\PhrestRequest;
 
 class JSONResponse extends HTTPResponse
@@ -30,9 +31,52 @@ class JSONResponse extends HTTPResponse
       $response->getStatusMessage()
     );
 
-    $this->data = $response->getData();
+    $this->data = $this->getDataFromResponse($response);
     $this->meta = $response->getMeta();
     $this->messages = $response->getMessages();
+  }
+
+  /**
+   * @param Response $response
+   *
+   * @return mixed|Response[]
+   */
+  private function getDataFromResponse(Response $response)
+  {
+    if ($response instanceof ResponseArray)
+    {
+      return $response->getResponses();
+    }
+    else
+    {
+      // Return public properties
+      $data = call_user_func('get_object_vars', $response);
+
+      if (count($data) > 0)
+      {
+        array_walk_recursive(
+          $data,
+          function (&$value)
+          {
+            if ($value instanceof AbstractEnum)
+            {
+              /** @var $value AbstractEnum */
+              $value = $value->getValue();
+            }
+            elseif ($value instanceof Response)
+            {
+              $value = $this->getDataFromResponse($value);
+            }
+            elseif ($value instanceof ResponseArray)
+            {
+              $value = $value->getResponses();
+            }
+          }
+        );
+      }
+
+      return $data;
+    }
   }
 
   /**
