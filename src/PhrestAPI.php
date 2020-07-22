@@ -1,6 +1,6 @@
 <?php
 namespace Phrest\API;
-use Phalcon\DiInterface;
+use Phalcon\Di\DiInterface;
 use Phalcon\Http\Client\Request;
 use Phalcon\Mvc\Micro\Collection as PhalconCollection;
 use Phrest\API\DI\PhrestDI;
