@@ -2,7 +2,7 @@
 
 namespace Phrest\API\DI;
 
-use Phalcon\DiInterface;
+use Phalcon\Di\DiInterface;
 use Phalcon\Http\RequestInterface;
 use Phalcon\Mvc\RouterInterface;
 use Phuse\Framework\Module\Config\Config;
