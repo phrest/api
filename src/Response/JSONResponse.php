@@ -84,7 +84,7 @@ class JSONResponse extends HTTPResponse
    *
    * @return \Phalcon\Http\ResponseInterface
    */
-  public function send()
+  public function send(): Phalcon\Http\ResponseInterface
   {
     // Set headers
     $this->setContentType('application/json');
