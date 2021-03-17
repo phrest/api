@@ -335,4 +335,12 @@ class PhrestRequest extends Request
   {
     return $this->format;
   }
+
+  /**
+   * @return string
+   */
+  public function getUserAgent(): string
+  {
+    return $this->getServer('HTTP_USER_AGENT') ?: parent::getUserAgent();
+  }
 }
